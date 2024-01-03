@@ -4,6 +4,8 @@
 #include "CppPlayer.h"
 #include <../../../../../../../Source/Runtime/Engine/Classes/GameFramework/SpringArmComponent.h>
 #include <../../../../../../../Source/Runtime/Engine/Classes/Camera/CameraComponent.h>
+#include <../../../../../../../Source/Runtime/Engine/Classes/Components/InputComponent.h>
+
 
 // Sets default values
 ACppPlayer::ACppPlayer()
@@ -62,5 +64,5 @@ void ACppPlayer::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent
 {
 	Super::SetupPlayerInputComponent(PlayerInputComponent);
 
+	
 }
-
