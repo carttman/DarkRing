@@ -2,9 +2,10 @@
 
 
 #include "CppPlayer.h"
-#include <../../../../../../../Source/Runtime/Engine/Classes/GameFramework/SpringArmComponent.h>
-#include <../../../../../../../Source/Runtime/Engine/Classes/Camera/CameraComponent.h>
-#include <../../../../../../../Source/Runtime/Engine/Classes/Components/InputComponent.h>
+#include <GameFramework/SpringArmComponent.h>
+#include <Camera/CameraComponent.h>
+#include <Components/InputComponent.h>
+#include <GameFramework/CharacterMovementComponent.h>
 
 
 // Sets default values
@@ -49,13 +50,34 @@ ACppPlayer::ACppPlayer()
 void ACppPlayer::BeginPlay()
 {
 	Super::BeginPlay();
-	
+
+	// 움직이는 속력을 moveSpeed 로 하자
+	GetCharacterMovement()->MaxWalkSpeed = moveSpeed;
+
+	// Controller 의 회전값을 따라 갈지 여부
+	bUseControllerRotationYaw = true;
+	springArm->bUsePawnControlRotation = true;
+
+	// 카메라 상/하 회전값을 제한 (min, max 설정)
+	APlayerController* playerCon = GetWorld()->GetFirstPlayerController();
+	playerCon->PlayerCameraManager->ViewPitchMin = -60;
+	playerCon->PlayerCameraManager->ViewPitchMax = 60;
+
+	//APlayerCameraManager* camManager = UGameplayStatics::GetPlayerCameraManager(GetWorld(), 0);
+	//camManager->ViewPitchMin = -60;
+	//camManager->ViewPitchMax = 60;
+
+	//점프 횟수 제한
+	JumpMaxCount = 2;
+
 }
 
 // Called every frame
 void ACppPlayer::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
+
+	MoveAction();
 
 }
 
@@ -64,5 +86,72 @@ void ACppPlayer::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent
 {
 	Super::SetupPlayerInputComponent(PlayerInputComponent);
 
+	// A, D
+	PlayerInputComponent->BindAxis(TEXT("Horizontal"), this, &ACppPlayer::InputHorizontal);
+
+	// W, S
+	PlayerInputComponent->BindAxis(TEXT("Vertical"), this, &ACppPlayer::InputVertical);
+
+	// 마우스 좌우 움직일 때
+	PlayerInputComponent->BindAxis(TEXT("MouseX"), this, &ACppPlayer::InputMouseX);
+
+	// 마우스 상하 움직일 때
+	PlayerInputComponent->BindAxis(TEXT("MouseY"), this, &ACppPlayer::InputMouseY);
+
+	// 스페이스바 눌렀을 때 
+	PlayerInputComponent->BindAction(TEXT("Jump"), IE_Pressed, this, &ACppPlayer::InputJump);
+	PlayerInputComponent->BindAction(TEXT("StopJumping"), IE_Released, this, &ACppPlayer::InputJump);
+
+	
+}
+
+void ACppPlayer::MoveAction()
+{
+	FVector dir = GetActorRightVector() * moveInput.Y + GetActorForwardVector() * moveInput.X;
+
+	// dir 의 크기를 1로 만든다
+	dir.Normalize();
+
+	// dir 방향으로 움직여라
+	AddMovementInput(dir);
+
+}
+
+void ACppPlayer::RotateAction()
+{
+	// 나의 회전 yaw (z축) 값 셋팅
+	SetActorRotation(FRotator(0, mx, 0));
+
+	//spring arm 의 회전 pitch (y축) 값 셋팅
+	springArm->SetRelativeRotation(FRotator(my, 0, 0));
+
+}
+
+void ACppPlayer::InputHorizontal(float value)
+{
+	moveInput.Y = value;
+}
+
+void ACppPlayer::InputVertical(float value)
+{
+	moveInput.X = value;
+
+}
+
+void ACppPlayer::InputMouseX(float value)
+{
+	AddControllerYawInput(value);
+
+}
+
+void ACppPlayer::InputMouseY(float value)
+{
+	AddControllerPitchInput(value);
+
+}
+
+void ACppPlayer::InputJump()
+{
+	Jump();
 	
 }
