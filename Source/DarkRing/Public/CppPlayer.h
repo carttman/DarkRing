@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Character.h"
+#include <../../../../../../../Plugins/EnhancedInput/Source/EnhancedInput/Public/InputActionValue.h>
 #include "CppPlayer.generated.h"
 
 UCLASS()
@@ -19,6 +20,7 @@ protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
 
+
 public:	
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
@@ -33,4 +35,23 @@ public:
 	UPROPERTY(EditAnywhere)
 	class UCameraComponent* camera;
 
+	// float h; , float v;
+	FVector moveInput = FVector(0);
+
+	float moveSpeed = 500;
+
+	// È¸Àü °ª
+	float mx = 0;
+	float my = 0;
+
+public:
+
+	void MoveAction();
+	void RotateAction();
+
+	void InputHorizontal(float value);
+	void InputVertical(float value);
+	void InputMouseX(float value);
+	void InputMouseY(float value);
+	void InputJump();
 };
