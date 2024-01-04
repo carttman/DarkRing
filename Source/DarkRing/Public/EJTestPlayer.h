@@ -5,6 +5,8 @@
 #include "CoreMinimal.h"
 #include "GameFramework/Character.h"
 #include "EJTestPlayer.generated.h"
+// #include "InputMappingContext.h"
+// #include "InputAction.h"
 
 UCLASS()
 class DARKRING_API AEJTestPlayer : public ACharacter
@@ -29,4 +31,19 @@ public:
 public:
 	UPROPERTY(EditAnywhere)
 	class USpringArmComponent* arm;
+	UPROPERTY(EditAnywhere)
+	class UCameraComponent* cam;
+
+// 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Enhanced Input")
+// 	UInputMappingContext* inputMappingContext;
+// 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Enhanced Input")
+// 	UInputAction* inputToJump;
+// 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Enhanced Input")
+// 	UInputAction* inputToMove;
+
+// public:
+// 	void EnhancedInputMove(const FInputActionValue& value);
+
+
+	
 };
