@@ -2,6 +2,9 @@
 
 
 #include "DarkSoules_Boss_Fight.h"
+#include "EJTestPlayer.h"
+#include "Kismet/GameplayStatics.h"
+#include "Kismet/KismetMathLibrary.h"
 
 // Sets default values
 ADarkSoules_Boss_Fight::ADarkSoules_Boss_Fight()
@@ -15,6 +18,15 @@ ADarkSoules_Boss_Fight::ADarkSoules_Boss_Fight()
 void ADarkSoules_Boss_Fight::BeginPlay()
 {
 	Super::BeginPlay();
+
+	target = UGameplayStatics::GetActorOfClass(GetWorld(), AEJTestPlayer::StaticClass());
+	if (target != nullptr) {
+		FVector playerPos = target->GetActorLocation();
+		dir = playerPos - GetActorLocation();
+		dir.Normalize();
+		FRotator rot = UKismetMathLibrary::MakeRotFromXZ(dir, GetActorUpVector());
+		SetActorRotation(rot);
+	}
 	
 }
 
@@ -22,6 +34,7 @@ void ADarkSoules_Boss_Fight::BeginPlay()
 void ADarkSoules_Boss_Fight::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
+
 
 }
 

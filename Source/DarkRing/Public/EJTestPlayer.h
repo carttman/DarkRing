@@ -4,16 +4,16 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Character.h"
-#include "DarkSoules_Boss_Fight.generated.h"
+#include "EJTestPlayer.generated.h"
 
 UCLASS()
-class DARKRING_API ADarkSoules_Boss_Fight : public ACharacter
+class DARKRING_API AEJTestPlayer : public ACharacter
 {
 	GENERATED_BODY()
 
 public:
 	// Sets default values for this character's properties
-	ADarkSoules_Boss_Fight();
+	AEJTestPlayer();
 
 protected:
 	// Called when the game starts or when spawned
@@ -28,7 +28,5 @@ public:
 
 public:
 	UPROPERTY(EditAnywhere)
-	AActor* target;
-	UPROPERTY()
-	FVector dir;
+	class USpringArmComponent* arm;
 };
