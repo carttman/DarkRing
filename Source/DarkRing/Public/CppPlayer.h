@@ -44,14 +44,31 @@ public:
 	float mx = 0;
 	float my = 0;
 
+	// Input Mapping Context 담을 변수
+	UPROPERTY(EditAnywhere)
+	class UInputMappingContext* imcDefault;
+
+	// InputAction Jump
+	UPROPERTY(EditAnywhere)
+	class UInputAction* ia_Jump;
+
+	// InputAction Mouse
+	UPROPERTY(EditAnywhere)
+	class UInputAction* ia_MouseMove;
+
+	//InputAction Move (W, A, S, D)
+	UPROPERTY(EditAnywhere)
+	class UInputAction* ia_Move;
+
 public:
 
-	void MoveAction();
+	void MoveAction(FVector2d keyboardInput);
 	void RotateAction();
 
 	void InputHorizontal(float value);
 	void InputVertical(float value);
-	void InputMouseX(float value);
-	void InputMouseY(float value);
-	void InputJump();
+	
+	void EnhancedJump();
+	void EnhancedMouse(const struct FInputActionValue& value);
+	void EnhancedMove(const struct FInputActionValue& value);
 };

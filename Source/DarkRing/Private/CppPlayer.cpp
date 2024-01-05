@@ -6,6 +6,10 @@
 #include <Camera/CameraComponent.h>
 #include <Components/InputComponent.h>
 #include <GameFramework/CharacterMovementComponent.h>
+#include <../../../../../../../Plugins/EnhancedInput/Source/EnhancedInput/Public/InputMappingContext.h>
+#include <../../../../../../../Plugins/EnhancedInput/Source/EnhancedInput/Public/InputAction.h>
+#include <../../../../../../../Plugins/EnhancedInput/Source/EnhancedInput/Public/EnhancedInputSubsystems.h>
+#include <../../../../../../../Plugins/EnhancedInput/Source/EnhancedInput/Public/EnhancedInputComponent.h>
 
 
 // Sets default values
@@ -13,6 +17,35 @@ ACppPlayer::ACppPlayer()
 {
  	// Set this character to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
+
+	// imc default 파일 읽어오자
+	ConstructorHelpers::FObjectFinder<UInputMappingContext> tempImc(TEXT("/Script/EnhancedInput.InputMappingContext'/Game/Input/IMC_Default.IMC_Default'"));
+	if (tempImc.Succeeded())
+	{
+		imcDefault = tempImc.Object;
+	}
+
+	// ia_jump 파일 읽어오자
+	ConstructorHelpers::FObjectFinder<UInputAction> tempIAJump(TEXT("/Script/EnhancedInput.InputAction'/Game/Input/IA_Jump.IA_Jump'"));
+	if (tempIAJump.Succeeded())
+	{
+		ia_Jump = tempIAJump.Object;
+	}
+
+	// ia_MouseMove 파일 읽어오자
+	ConstructorHelpers::FObjectFinder<UInputAction> tempIAMouseMove(TEXT("/Script/EnhancedInput.InputAction'/Game/Input/IA_MouseMove.IA_MouseMove'"));
+	if (tempIAMouseMove.Succeeded())
+	{
+		ia_MouseMove = tempIAMouseMove.Object;
+	}
+
+	// ia_Move 파일 읽어오자
+	ConstructorHelpers::FObjectFinder<UInputAction> tempIAMove(TEXT("/Script/EnhancedInput.InputAction'/Game/Input/IA_Move.IA_Move'"));
+	if (tempIAMove.Succeeded())
+	{
+		ia_Move = tempIAMove.Object;
+	}
+
 
 	//Skeletal Mesh 읽어오기
 	ConstructorHelpers::FObjectFinder<USkeletalMesh> tempMesh(TEXT("/Script/Engine.SkeletalMesh'/Game/ParagonAurora/Characters/Heroes/Aurora/Skins/GlacialEmpress/Meshes/Aurora_GlacialEmpress.Aurora_GlacialEmpress'"));
@@ -70,6 +103,15 @@ void ACppPlayer::BeginPlay()
 	//점프 횟수 제한
 	JumpMaxCount = 2;
 
+	// AplayerController 가져오자
+	APlayerController* playerController = Cast<APlayerController>(GetController());
+
+	//subSystem 을 가져오자
+	//UEnhancedInputLocalPlayerSubsystem* subSystem = ULocalPlayer::GetSubsystem<UEnhancedInputLocalPlayerSubsystem>(playerController->GetLocalPlayer());
+	auto subSystem = ULocalPlayer::GetSubsystem<UEnhancedInputLocalPlayerSubsystem>(playerController->GetLocalPlayer());
+
+	// imc_Default를 추가하자
+	subSystem->AddMappingContext(imcDefault, 0);
 }
 
 // Called every frame
@@ -77,37 +119,32 @@ void ACppPlayer::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
-	MoveAction();
+	
 
 }
 
-// Called to bind functionality to input
+// Enhanced Input BindAction은 여기에
 void ACppPlayer::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 {
 	Super::SetupPlayerInputComponent(PlayerInputComponent);
 
-	// A, D
-	PlayerInputComponent->BindAxis(TEXT("Horizontal"), this, &ACppPlayer::InputHorizontal);
+	UEnhancedInputComponent* input = Cast<UEnhancedInputComponent>(PlayerInputComponent);
 
-	// W, S
-	PlayerInputComponent->BindAxis(TEXT("Vertical"), this, &ACppPlayer::InputVertical);
+	if (input)
+	{
+		input->BindAction(ia_Jump, ETriggerEvent::Started, this, &ACppPlayer::EnhancedJump);
 
-	// 마우스 좌우 움직일 때
-	PlayerInputComponent->BindAxis(TEXT("MouseX"), this, &ACppPlayer::InputMouseX);
+		input->BindAction(ia_MouseMove, ETriggerEvent::Triggered, this, &ACppPlayer::EnhancedMouse);
 
-	// 마우스 상하 움직일 때
-	PlayerInputComponent->BindAxis(TEXT("MouseY"), this, &ACppPlayer::InputMouseY);
+		input->BindAction(ia_Move, ETriggerEvent::Triggered, this, &ACppPlayer::EnhancedMove);
 
-	// 스페이스바 눌렀을 때 
-	PlayerInputComponent->BindAction(TEXT("Jump"), IE_Pressed, this, &ACppPlayer::InputJump);
-	PlayerInputComponent->BindAction(TEXT("StopJumping"), IE_Released, this, &ACppPlayer::InputJump);
+	}
 
-	
 }
 
-void ACppPlayer::MoveAction()
+void ACppPlayer::MoveAction(FVector2d keyboardInput)
 {
-	FVector dir = GetActorRightVector() * moveInput.Y + GetActorForwardVector() * moveInput.X;
+	FVector dir = GetActorRightVector() * keyboardInput.X + GetActorForwardVector() * keyboardInput.Y;
 
 	// dir 의 크기를 1로 만든다
 	dir.Normalize();
@@ -117,15 +154,6 @@ void ACppPlayer::MoveAction()
 
 }
 
-void ACppPlayer::RotateAction()
-{
-	// 나의 회전 yaw (z축) 값 셋팅
-	SetActorRotation(FRotator(0, mx, 0));
-
-	//spring arm 의 회전 pitch (y축) 값 셋팅
-	springArm->SetRelativeRotation(FRotator(my, 0, 0));
-
-}
 
 void ACppPlayer::InputHorizontal(float value)
 {
@@ -138,20 +166,24 @@ void ACppPlayer::InputVertical(float value)
 
 }
 
-void ACppPlayer::InputMouseX(float value)
-{
-	AddControllerYawInput(value);
 
-}
-
-void ACppPlayer::InputMouseY(float value)
-{
-	AddControllerPitchInput(value);
-
-}
-
-void ACppPlayer::InputJump()
+void ACppPlayer::EnhancedJump()
 {
 	Jump();
-	
+}
+
+void ACppPlayer::EnhancedMouse(const FInputActionValue& value)
+{
+	FVector2D mouseValue = value.Get<FVector2D>();
+
+	AddControllerYawInput(mouseValue.X);
+	AddControllerPitchInput(mouseValue.Y);
+}
+
+void ACppPlayer::EnhancedMove(const FInputActionValue& value)
+{
+	FVector2D keyboardValue = value.Get<FVector2D>();
+
+	MoveAction(keyboardValue);
+
 }
