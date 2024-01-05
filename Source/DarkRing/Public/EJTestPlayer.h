@@ -36,8 +36,11 @@ public:
 
 // 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Enhanced Input")
 // 	UInputMappingContext* inputMappingContext;
+// 
 // 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Enhanced Input")
 // 	UInputAction* inputToJump;
+// 
+// 
 // 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Enhanced Input")
 // 	UInputAction* inputToMove;
 
