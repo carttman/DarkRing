@@ -35,6 +35,11 @@ void ADarkSoules_Boss_Fight::Tick(float DeltaTime)
 		dir.Normalize();
 		FRotator rot = UKismetMathLibrary::MakeRotFromXZ(dir, GetActorUpVector());
 		SetActorRotation(rot);
+
+		FVector p = GetActorLocation() + GetActorForwardVector() * DeltaTime * 50;
+		SetActorLocation(p);
+
+		
 	}
 
 
