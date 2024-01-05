@@ -19,14 +19,7 @@ void ADarkSoules_Boss_Fight::BeginPlay()
 {
 	Super::BeginPlay();
 
-	target = UGameplayStatics::GetActorOfClass(GetWorld(), AEJTestPlayer::StaticClass());
-	if (target != nullptr) {
-		FVector playerPos = target->GetActorLocation();
-		dir = playerPos - GetActorLocation();
-		dir.Normalize();
-		FRotator rot = UKismetMathLibrary::MakeRotFromXZ(dir, GetActorUpVector());
-		SetActorRotation(rot);
-	}
+	
 	
 }
 
@@ -34,6 +27,20 @@ void ADarkSoules_Boss_Fight::BeginPlay()
 void ADarkSoules_Boss_Fight::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
+
+	target = UGameplayStatics::GetActorOfClass(GetWorld(), AEJTestPlayer::StaticClass());
+	if (target != nullptr) {
+		FVector playerPos = target->GetActorLocation();
+		dir = playerPos - GetActorLocation();
+		dir.Normalize();
+		FRotator rot = UKismetMathLibrary::MakeRotFromXZ(dir, GetActorUpVector());
+		SetActorRotation(rot);
+
+		FVector p = GetActorLocation() + GetActorForwardVector() * DeltaTime * 50;
+		SetActorLocation(p);
+
+		
+	}
 
 
 }

@@ -29,4 +29,27 @@ public:
 public:
 	UPROPERTY(EditAnywhere)
 	class USpringArmComponent* arm;
+	UPROPERTY(EditAnywhere)
+	class UCameraComponent* cam;
+
+	UPROPERTY(EditAnywhere)
+	class UInputMappingContext* imcDafault;
+
+	UPROPERTY(EditAnywhere)
+	class UInputAction* ia_MouseMove;
+
+
+// 
+// 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Enhanced Input")
+// 	UInputAction* inputToJump;
+// 
+// 
+// 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Enhanced Input")
+// 	UInputAction* inputToMove;
+
+public:
+
+	void EnhancedMouse(const struct FInputActionValue& value);
+
+	
 };
