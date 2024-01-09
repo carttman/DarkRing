@@ -37,11 +37,13 @@ void ADarkSoules_Boss_Fight::Tick(float DeltaTime)
 		SetActorRotation(rot);
 
 		FVector p = GetActorLocation() + GetActorForwardVector() * DeltaTime * 50;
-		SetActorLocation(p);
+		
+		if (GetDistanceTo(target) >150) SetActorLocation(p);
 
 		
 	}
 
+	
 
 }
 
