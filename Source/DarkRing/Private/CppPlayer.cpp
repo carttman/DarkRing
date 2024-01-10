@@ -1,4 +1,4 @@
-// Fill out your copyright notice in the Description page of Project Settings.
+ï»¿// Fill out your copyright notice in the Description page of Project Settings.
 
 
 #include "CppPlayer.h"
@@ -10,6 +10,8 @@
 #include <../../../../../../../Plugins/EnhancedInput/Source/EnhancedInput/Public/InputAction.h>
 #include <../../../../../../../Plugins/EnhancedInput/Source/EnhancedInput/Public/EnhancedInputSubsystems.h>
 #include <../../../../../../../Plugins/EnhancedInput/Source/EnhancedInput/Public/EnhancedInputComponent.h>
+#include <../../../../../../../Source/Runtime/Engine/Classes/Kismet/KismetMathLibrary.h>
+#include "PlayerAnim.h"
 
 
 // Sets default values
@@ -18,63 +20,71 @@ ACppPlayer::ACppPlayer()
  	// Set this character to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
 
-	// imc default ÆÄÀÏ ÀĞ¾î¿ÀÀÚ
+	// imc default íŒŒì¼ ì½ì–´ì˜¤ì
 	ConstructorHelpers::FObjectFinder<UInputMappingContext> tempImc(TEXT("/Script/EnhancedInput.InputMappingContext'/Game/Input/IMC_Default.IMC_Default'"));
 	if (tempImc.Succeeded())
 	{
 		imcDefault = tempImc.Object;
 	}
 
-	// ia_jump ÆÄÀÏ ÀĞ¾î¿ÀÀÚ
+	// ia_jump íŒŒì¼ ì½ì–´ì˜¤ì
 	ConstructorHelpers::FObjectFinder<UInputAction> tempIAJump(TEXT("/Script/EnhancedInput.InputAction'/Game/Input/IA_Jump.IA_Jump'"));
 	if (tempIAJump.Succeeded())
 	{
 		ia_Jump = tempIAJump.Object;
 	}
 
-	// ia_MouseMove ÆÄÀÏ ÀĞ¾î¿ÀÀÚ
+	// ia_MouseMove íŒŒì¼ ì½ì–´ì˜¤ì
 	ConstructorHelpers::FObjectFinder<UInputAction> tempIAMouseMove(TEXT("/Script/EnhancedInput.InputAction'/Game/Input/IA_MouseMove.IA_MouseMove'"));
 	if (tempIAMouseMove.Succeeded())
 	{
 		ia_MouseMove = tempIAMouseMove.Object;
 	}
 
-	// ia_Move ÆÄÀÏ ÀĞ¾î¿ÀÀÚ
+	// ia_Move íŒŒì¼ ì½ì–´ì˜¤ì
 	ConstructorHelpers::FObjectFinder<UInputAction> tempIAMove(TEXT("/Script/EnhancedInput.InputAction'/Game/Input/IA_Move.IA_Move'"));
 	if (tempIAMove.Succeeded())
 	{
 		ia_Move = tempIAMove.Object;
 	}
 
+	// ia_Attack íŒŒì¼ ì½ì–´ì˜¤ì
+	ConstructorHelpers::FObjectFinder<UInputAction> tempIAAttack(TEXT("/Script/EnhancedInput.InputAction'/Game/Input/IA_Attack.IA_Attack'"));
+	if (tempIAAttack.Succeeded())
+	{
+		ia_Attack = tempIAAttack.Object;
+	}
 
-	//Skeletal Mesh ÀĞ¾î¿À±â
+	//Skeletal Mesh ì½ì–´ì˜¤ê¸°
 	ConstructorHelpers::FObjectFinder<USkeletalMesh> tempMesh(TEXT("/Script/Engine.SkeletalMesh'/Game/ParagonAurora/Characters/Heroes/Aurora/Skins/GlacialEmpress/Meshes/Aurora_GlacialEmpress.Aurora_GlacialEmpress'"));
 
-	//tempMesh¸¦ Àß ºÒ·¯¿Ô´Ù¸é 
+	//tempMeshë¥¼ ì˜ ë¶ˆëŸ¬ì™”ë‹¤ë©´ 
 	if (tempMesh.Succeeded())
 	{
-		// Mesh ¿¡ Skeletal Mesh ¼ÂÆÃ
+		// Mesh ì— Skeletal Mesh ì…‹íŒ…
 		USkeletalMeshComponent* mesh = GetMesh();
 		mesh->SetSkeletalMesh(tempMesh.Object);
 	}
 
-	// Mesh ÀÇ À§Ä¡ °ª°ú È¸Àü°ªÀ» ¼ÂÆÃ
+	// Mesh ì˜ ìœ„ì¹˜ ê°’ê³¼ íšŒì „ê°’ì„ ì…‹íŒ…
 	GetMesh()->SetRelativeLocation(FVector(0, 0, -88));
 	GetMesh()->SetRelativeRotation(FRotator(0, -90, 0)); //pitch, yaw, roll
 
-	//SpringArm ÄÄÆ÷³ÍÆ® »ı¼º
+	//SpringArm ì»´í¬ë„ŒíŠ¸ ìƒì„±
 	springArm = CreateDefaultSubobject<USpringArmComponent>(TEXT("springArm"));
-	//springArm À» RootComponent ÀÇ ÀÚ½Ä (·çÇÁ ÄÄÆ÷³ÍÆ®´Â µğÆúÆ® ±âº» ÀÚ½ÄÀÓ)
+	//springArm ì„ RootComponent ì˜ ìì‹ (ë£¨í”„ ì»´í¬ë„ŒíŠ¸ëŠ” ë””í´íŠ¸ ê¸°ë³¸ ìì‹ì„)
 	springArm->SetupAttachment(RootComponent);
-	//springArm À§Ä¡¸¦ ¹Ù²ÙÀÚ
+	//springArm ìœ„ì¹˜ë¥¼ ë°”ê¾¸ì
 	springArm->SetRelativeLocation(FVector(0, 0, 90));
-	//springArm °¢µµ º¯°æ
+	//springArm ê°ë„ ë³€ê²½
 	springArm->SetRelativeRotation(FRotator(-30, 0, 0));
 
-	//camera ÄÄÆ÷³ÍÆ® »ı¼º
+	//camera ì»´í¬ë„ŒíŠ¸ ìƒì„±
 	camera = CreateDefaultSubobject<UCameraComponent>(TEXT("camera"));
-	//camera ¸¦ springArm ÀÇ ÀÚ½ÄÀ¸·Î ¼ÂÆÃ
+	//camera ë¥¼ springArm ì˜ ìì‹ìœ¼ë¡œ ì…‹íŒ…
 	camera->SetupAttachment(springArm);
+
+
 
 	
 }
@@ -84,14 +94,14 @@ void ACppPlayer::BeginPlay()
 {
 	Super::BeginPlay();
 
-	// ¿òÁ÷ÀÌ´Â ¼Ó·ÂÀ» moveSpeed ·Î ÇÏÀÚ
+	// ì›€ì§ì´ëŠ” ì†ë ¥ì„ moveSpeed ë¡œ í•˜ì
 	GetCharacterMovement()->MaxWalkSpeed = moveSpeed;
 
-	// Controller ÀÇ È¸Àü°ªÀ» µû¶ó °¥Áö ¿©ºÎ
-	bUseControllerRotationYaw = true;
-	springArm->bUsePawnControlRotation = true;
+	// Controller ì˜ íšŒì „ê°’ì„ ë”°ë¼ ê°ˆì§€ ì—¬ë¶€
+	//bUseControllerRotationYaw = false;
+	//springArm->bUsePawnControlRotation = true;
 
-	// Ä«¸Ş¶ó »ó/ÇÏ È¸Àü°ªÀ» Á¦ÇÑ (min, max ¼³Á¤)
+	// ì¹´ë©”ë¼ ìƒ/í•˜ íšŒì „ê°’ì„ ì œí•œ (min, max ì„¤ì •)
 	APlayerController* playerCon = GetWorld()->GetFirstPlayerController();
 	playerCon->PlayerCameraManager->ViewPitchMin = -60;
 	playerCon->PlayerCameraManager->ViewPitchMax = 60;
@@ -100,18 +110,20 @@ void ACppPlayer::BeginPlay()
 	//camManager->ViewPitchMin = -60;
 	//camManager->ViewPitchMax = 60;
 
-	//Á¡ÇÁ È½¼ö Á¦ÇÑ
+	//ì í”„ íšŸìˆ˜ ì œí•œ
 	JumpMaxCount = 2;
 
-	// AplayerController °¡Á®¿ÀÀÚ
+	// AplayerController ê°€ì ¸ì˜¤ì
 	APlayerController* playerController = Cast<APlayerController>(GetController());
 
-	//subSystem À» °¡Á®¿ÀÀÚ
+	//subSystem ì„ ê°€ì ¸ì˜¤ì
 	//UEnhancedInputLocalPlayerSubsystem* subSystem = ULocalPlayer::GetSubsystem<UEnhancedInputLocalPlayerSubsystem>(playerController->GetLocalPlayer());
 	auto subSystem = ULocalPlayer::GetSubsystem<UEnhancedInputLocalPlayerSubsystem>(playerController->GetLocalPlayer());
 
-	// imc_Default¸¦ Ãß°¡ÇÏÀÚ
+	// imc_Defaultë¥¼ ì¶”ê°€í•˜ì
 	subSystem->AddMappingContext(imcDefault, 0);
+
+	
 }
 
 // Called every frame
@@ -119,11 +131,12 @@ void ACppPlayer::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
-	
+	//ì—…ë°ì´íŠ¸ ì½¤ë³´ì˜ ë¸íƒ€íƒ€ì„ ì¦ê°€ì‹œì¼œë¼ / ì´ˆë¥¼ ì¦ê°€ì‹œì¼œë¼
+	UpdateCombo(DeltaTime);
 
 }
 
-// Enhanced Input BindActionÀº ¿©±â¿¡
+// Enhanced Input BindActionì€ ì—¬ê¸°ì—
 void ACppPlayer::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 {
 	Super::SetupPlayerInputComponent(PlayerInputComponent);
@@ -138,18 +151,23 @@ void ACppPlayer::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent
 
 		input->BindAction(ia_Move, ETriggerEvent::Triggered, this, &ACppPlayer::EnhancedMove);
 
+		input->BindAction(ia_Attack, ETriggerEvent::Triggered, this, &ACppPlayer::EnhancedAttck);
 	}
 
 }
 
 void ACppPlayer::MoveAction(FVector2d keyboardInput)
 {
-	FVector dir = GetActorRightVector() * keyboardInput.X + GetActorForwardVector() * keyboardInput.Y;
+	FRotator rot = GetControlRotation();
+	FVector forward = UKismetMathLibrary::GetForwardVector(rot);
+	FVector right = UKismetMathLibrary::GetRightVector(rot);
 
-	// dir ÀÇ Å©±â¸¦ 1·Î ¸¸µç´Ù
+	FVector dir = right * keyboardInput.X + forward * keyboardInput.Y;
+
+	// dir ì˜ í¬ê¸°ë¥¼ 1ë¡œ ë§Œë“ ë‹¤
 	dir.Normalize();
 
-	// dir ¹æÇâÀ¸·Î ¿òÁ÷¿©¶ó
+	// dir ë°©í–¥ìœ¼ë¡œ ì›€ì§ì—¬ë¼
 	AddMovementInput(dir);
 
 }
@@ -170,6 +188,8 @@ void ACppPlayer::InputVertical(float value)
 void ACppPlayer::EnhancedJump()
 {
 	Jump();
+	
+	
 }
 
 void ACppPlayer::EnhancedMouse(const FInputActionValue& value)
@@ -187,3 +207,83 @@ void ACppPlayer::EnhancedMove(const FInputActionValue& value)
 	MoveAction(keyboardValue);
 
 }
+
+void ACppPlayer::EnhancedAttck(const struct FInputActionValue& value)
+{
+	// ì• ë‹ˆë©”ì´ì…˜ì„ í”Œë ˆì´ í•˜ê³ ìˆëŠ”ê°€? ë¶ˆ ë³€ìˆ˜ ì„ ì–¸
+	bool playAnimation = false;
+
+	// ì„¹ì…˜ ì í”„ë¥¼ í•˜ê¸°ìœ„í•œ sectionName ì„ ì–¸
+	FName sectionName = TEXT("");
+	
+	//ë§Œì•½ combo ì¹´ìš´íŠ¸ê°€ 0ì¼ ë•Œ 
+	if (comboCnt == 0)
+	{
+		//combo ì¹´ìš´íŠ¸ë¥¼ 1 ì¦ê°€í•˜ê³   ì½¤ë³´ í˜„ì¬ì‹œê°„ì„ 0ìœ¼ë¡œ 
+		comboCnt++;
+		comboCurrTime = 0;
+		UE_LOG(LogTemp, Warning, TEXT("%dë²ˆì§¸ ê³µê²© ëª¨ì…˜"), comboCnt);
+
+		playAnimation = true;
+		sectionName = TEXT("Attack1");
+		
+	}
+	//ë§Œì•½ combo ì¹´ìš´íŠ¸ê°€ 1ì¼ ë•Œ 
+	else if(comboCnt == 1)
+	{
+		// ë§Œì•½ ì½¤ë³´í˜„ì¬ì‹œê°„ì´ ìµœì†Œì‹œê°„ë³´ë‹¤ ì‘ê±°ë‚˜ ê°™ê³  and ìµœëŒ€ì‹œê°„ì´ ì‘ê±°ë‚˜ ê°™ì„ ë•Œ
+		if (comboMinTime <= comboCurrTime && comboCurrTime <= comboMaxTime)
+		{
+			// ì½¤ë³´ ì¹´ìš´íŠ¸ 1 ì¦ê°€ì‹œí‚¤ê³  í˜„ì¬ì‹œê°„ 0 ìœ¼ë¡œ ì´ˆê¸°í™” 
+			comboCnt++;
+			comboCurrTime = 0;
+			UE_LOG(LogTemp, Warning, TEXT("%dë²ˆì§¸ ê³µê²© ëª¨ì…˜"), comboCnt);
+
+			playAnimation = true;
+			sectionName = TEXT("Attack2");
+		}
+	}
+
+	//ë§Œì•½ ì½¤ë³´ ì¹´ìš´íŠ¸ê°€ 3 ë¯¸ë§Œì¼ ë•Œ 
+	else if (comboCnt == 2)
+	{
+		// ë§Œì•½ ì½¤ë³´í˜„ì¬ì‹œê°„ì´ ìµœì†Œì‹œê°„ë³´ë‹¤ ì‘ê±°ë‚˜ ê°™ê³  and ìµœëŒ€ì‹œê°„ì´ ì‘ê±°ë‚˜ ê°™ì„ ë•Œ
+		if (comboMinTime <= comboCurrTime && comboCurrTime <= comboMaxTime)
+		{
+			// ì½¤ë³´ ì¹´ìš´íŠ¸ 1 ì¦ê°€ì‹œí‚¤ê³  í˜„ì¬ì‹œê°„ 0 ìœ¼ë¡œ ì´ˆê¸°í™” 
+			comboCnt++;
+			comboCurrTime = 0;
+			UE_LOG(LogTemp, Warning, TEXT("%dë²ˆì§¸ ê³µê²© ëª¨ì…˜"), comboCnt);
+
+			playAnimation = true;
+			sectionName = TEXT("Attack3");
+		}
+	}
+
+	// ë‚˜ ì• ë‹ˆë©”ì´ì…˜ í”Œë ˆì´ í•´ì•¼ í•˜ë‹ˆ?
+	if (playAnimation == true)
+	{
+		// AnimInstanceë¥¼ ê°€ì ¸ì˜¤ê¸°
+		auto AnimInstance = Cast<UPlayerAnim>(GetMesh()->GetAnimInstance());
+		//FString sectionName = FString::Printf(TEXT("Atttack%d"), comboCnt);
+		AnimInstance->ComboAttackMontage(sectionName);
+	}
+}
+
+void ACppPlayer::UpdateCombo(float deltaTime)
+{
+	// ì½¤ë³´ ì¹´ìš´íŠ¸ê°€ 0ë³´ë‹¤ í¬ë©´ (ì½¤ë³´ ì‹œì‘)
+	if (comboCnt > 0)
+	{
+		//ì½¤ë³´ í˜„ì¬ì‹œê°„ = ì½¤ë³´ í˜„ì¬ì‹œê°„ + ë¸íƒ€íƒ€ì„ -> ì½¤ë³´ í˜„ì¬ì‹œê°„ì„ ì¦ê°€ì‹œì¼œë¼
+		comboCurrTime += deltaTime;
+		//ì½¤ë³´ í˜„ì¬ ì‹œê°„ì´ ìµœëŒ€ì‹œê°„ë³´ë‹¤ ì»¤ì¡Œì„ ë•Œ
+		if (comboCurrTime > comboMaxTime)
+		{
+			// ì½¤ë³´ ì¹´ìš´íŠ¸ë¥¼ ì´ˆê¸°í™” ì‹œì¼œë¼ -> ì½¤ë³´ ì²˜ìŒë¶€í„° ì‹œì‘í•˜ê¸° ìœ„í•´ì„œ
+			comboCnt = 0;
+		}
+	}
+}
+
+

@@ -40,10 +40,6 @@ public:
 
 	float moveSpeed = 500;
 
-	// 회전 값
-	float mx = 0;
-	float my = 0;
-
 	// Input Mapping Context 담을 변수
 	UPROPERTY(EditAnywhere)
 	class UInputMappingContext* imcDefault;
@@ -60,10 +56,22 @@ public:
 	UPROPERTY(EditAnywhere)
 	class UInputAction* ia_Move;
 
+	//InputAction Attack
+	UPROPERTY(EditAnywhere)
+	class UInputAction* ia_Attack;
+
+	//콤보 카운트와 콤보 타이밍 시간 변수
+	int32 comboCnt = 0;
+	float comboMinTime = 1.0f;
+	float comboMaxTime = 1.5f;
+	float comboCurrTime = 0;
+
+	UPROPERTY(EditAnywhere)
+	class UAnimMontage* AttackMontage;
+
 public:
 
 	void MoveAction(FVector2d keyboardInput);
-	void RotateAction();
 
 	void InputHorizontal(float value);
 	void InputVertical(float value);
@@ -71,4 +79,10 @@ public:
 	void EnhancedJump();
 	void EnhancedMouse(const struct FInputActionValue& value);
 	void EnhancedMove(const struct FInputActionValue& value);
+
+	void EnhancedAttck(const struct FInputActionValue& value);
+
+	void UpdateCombo(float deltaTime);
+
+	
 };
