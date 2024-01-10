@@ -4,11 +4,22 @@
 #include "PlayerAnim.h"
 #include "CppPlayer.h"
 
+UPlayerAnim::UPlayerAnim()
+{
+	// Combo Attack 몽타주를 파일 읽어오자
+	static ConstructorHelpers::FObjectFinder<UAnimMontage> AM(TEXT("/Script/Engine.AnimMontage'/Game/Animation/AM_Combo_Attack.AM_Combo_Attack'"));
+	if (AM.Succeeded()) //가져오기 성공시 
+	{
+			// 선언한 AttackMontage 변수에 object 전달
+			AttackMontage = AM.Object;
+	}
+}
+
 void UPlayerAnim::NativeUpdateAnimation(float DeltaSeconds)
 {
 	Super::NativeUpdateAnimation(DeltaSeconds);
 
-	//플레이어의 이동 속도를 가져와 speed에 할당하고 싶다
+	//플레이어의 이동 속도를 가져와 speed 에 할당하고 싶다
 	//1. 소유 폰 얻어오기
 	auto ownerPawn = TryGetPawnOwner();
 
@@ -26,7 +37,28 @@ void UPlayerAnim::NativeUpdateAnimation(float DeltaSeconds)
 
 		//5. speed에 값(내적) 할당하기
 		speed = FVector::DotProduct(forwardVector, Velocity);
-		UE_LOG(LogTemp, Warning, TEXT("%f"), speed);
 
 	}
+	
+
 }
+
+void UPlayerAnim::NativeInitializeAnimation()
+{
+
+}
+
+// ComboAttack 몽타주 함수 정의
+void UPlayerAnim::ComboAttackMontage(FName sectionName)
+{
+	// 몽타주 실행
+	Montage_Play(AttackMontage, 1.f);
+	
+	
+	// 섹션 지정
+	Montage_JumpToSection(sectionName, AttackMontage);
+}
+
+
+
+
