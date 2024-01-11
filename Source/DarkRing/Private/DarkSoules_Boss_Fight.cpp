@@ -5,6 +5,7 @@
 #include "EJTestPlayer.h"
 #include "Kismet/GameplayStatics.h"
 #include "Kismet/KismetMathLibrary.h"
+#include "CppPlayer.h"
 
 // Sets default values
 ADarkSoules_Boss_Fight::ADarkSoules_Boss_Fight()
@@ -28,7 +29,7 @@ void ADarkSoules_Boss_Fight::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
-	target = UGameplayStatics::GetActorOfClass(GetWorld(), AEJTestPlayer::StaticClass());
+	target = UGameplayStatics::GetActorOfClass(GetWorld(), ACppPlayer::StaticClass());
 	if (target != nullptr) {
 		FVector playerPos = target->GetActorLocation();
 		dir = playerPos - GetActorLocation();
