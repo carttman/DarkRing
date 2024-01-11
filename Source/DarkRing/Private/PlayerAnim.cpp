@@ -48,14 +48,14 @@ void UPlayerAnim::NativeInitializeAnimation()
 
 }
 
-// ComboAttack 몽타주 함수 정의
+// ComboAttack 몽타주 함수 (FName 가져올 섹션이름)
 void UPlayerAnim::ComboAttackMontage(FName sectionName)
 {
-	// 몽타주 실행
+	// 몽타주 실행(몽타주 파일 담은 변수, 플레이 시간)
 	Montage_Play(AttackMontage, 1.f);
 	
 	
-	// 섹션 지정
+	// 몽타주 섹션 점프(섹션 이름, 몽타주 파일 담은 변수)
 	Montage_JumpToSection(sectionName, AttackMontage);
 }
 

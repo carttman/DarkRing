@@ -62,9 +62,10 @@ public:
 
 	//콤보 카운트와 콤보 타이밍 시간 변수
 	int32 comboCnt = 0;
-	float comboMinTime = 1.0f;
-	float comboMaxTime = 1.5f;
+	float comboMinTime = 0.5f;
+	float comboMaxTime = 0.8f;
 	float comboCurrTime = 0;
+
 
 	UPROPERTY(EditAnywhere)
 	class UAnimMontage* AttackMontage;
@@ -84,5 +85,5 @@ public:
 
 	void UpdateCombo(float deltaTime);
 
-	
+
 };

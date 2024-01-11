@@ -187,9 +187,9 @@ void ACppPlayer::InputVertical(float value)
 
 void ACppPlayer::EnhancedJump()
 {
-	Jump();
-	
-	
+
+		Jump();
+
 }
 
 void ACppPlayer::EnhancedMouse(const FInputActionValue& value)
@@ -210,24 +210,37 @@ void ACppPlayer::EnhancedMove(const FInputActionValue& value)
 
 void ACppPlayer::EnhancedAttck(const struct FInputActionValue& value)
 {
+	// 만약 공중에 있는 상태라면 공격 못하도록 바로 리턴
+	if (GetCharacterMovement()->IsFalling()) return;
+	
 	// 애니메이션을 플레이 하고있는가? 불 변수 선언
 	bool playAnimation = false;
 
+	
 	// 섹션 점프를 하기위한 sectionName 선언
 	FName sectionName = TEXT("");
 	
 	//만약 combo 카운트가 0일 때 
-	if (comboCnt == 0)
+	if(comboCnt == 0)
 	{
 		//combo 카운트를 1 증가하고  콤보 현재시간을 0으로 
 		comboCnt++;
 		comboCurrTime = 0;
-		UE_LOG(LogTemp, Warning, TEXT("%d번째 공격 모션"), comboCnt);
+		UE_LOG(LogTemp, Warning, TEXT("%d타"), comboCnt);
 
+		//공격 몽타주 섹션 실행
 		playAnimation = true;
 		sectionName = TEXT("Attack1");
+
+		//플레이어 이동 정지
+		GetCharacterMovement()->SetMovementMode(MOVE_None);
+		//공격하고 있을 때 점프 막자
+		GetCharacterMovement()->SetJumpAllowed(false);
+
+		
 		
 	}
+
 	//만약 combo 카운트가 1일 때 
 	else if(comboCnt == 1)
 	{
@@ -237,10 +250,16 @@ void ACppPlayer::EnhancedAttck(const struct FInputActionValue& value)
 			// 콤보 카운트 1 증가시키고 현재시간 0 으로 초기화 
 			comboCnt++;
 			comboCurrTime = 0;
-			UE_LOG(LogTemp, Warning, TEXT("%d번째 공격 모션"), comboCnt);
+			UE_LOG(LogTemp, Warning, TEXT("%d타"), comboCnt);
 
 			playAnimation = true;
 			sectionName = TEXT("Attack2");
+
+			//플레이어 이동 정지
+			GetCharacterMovement()->SetMovementMode(MOVE_None);
+			//공격하고 있을 때 점프 막자
+			
+
 		}
 	}
 
@@ -257,6 +276,11 @@ void ACppPlayer::EnhancedAttck(const struct FInputActionValue& value)
 
 			playAnimation = true;
 			sectionName = TEXT("Attack3");
+
+			//플레이어 이동 정지
+			GetCharacterMovement()->SetMovementMode(MOVE_None);
+			
+
 		}
 	}
 
@@ -270,6 +294,7 @@ void ACppPlayer::EnhancedAttck(const struct FInputActionValue& value)
 	}
 }
 
+
 void ACppPlayer::UpdateCombo(float deltaTime)
 {
 	// 콤보 카운트가 0보다 크면 (콤보 시작)
@@ -282,6 +307,12 @@ void ACppPlayer::UpdateCombo(float deltaTime)
 		{
 			// 콤보 카운트를 초기화 시켜라 -> 콤보 처음부터 시작하기 위해서
 			comboCnt = 0;
+
+			// 움직임, 점프 활성화
+			GetCharacterMovement()->SetMovementMode(MOVE_Walking);
+			GetCharacterMovement()->SetJumpAllowed(true);
+
+			
 		}
 	}
 }
