@@ -31,4 +31,8 @@ public:
 	AActor* target;
 	UPROPERTY()
 	FVector dir;
+
+public:
+	UPROPERTY(EditAnywhere)
+	class UBossFSM* fsm;	
 };

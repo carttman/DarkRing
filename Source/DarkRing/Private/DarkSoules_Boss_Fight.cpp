@@ -6,12 +6,15 @@
 #include "Kismet/GameplayStatics.h"
 #include "Kismet/KismetMathLibrary.h"
 #include "CppPlayer.h"
+#include "BossFSM.h"
 
 // Sets default values
 ADarkSoules_Boss_Fight::ADarkSoules_Boss_Fight()
 {
  	// Set this character to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
+
+	fsm = CreateDefaultSubobject<UBossFSM>(TEXT("FSM"));
 
 }
 
@@ -29,6 +32,7 @@ void ADarkSoules_Boss_Fight::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
+	/*
 	target = UGameplayStatics::GetActorOfClass(GetWorld(), ACppPlayer::StaticClass());
 	if (target != nullptr) {
 		FVector playerPos = target->GetActorLocation();
@@ -43,7 +47,7 @@ void ADarkSoules_Boss_Fight::Tick(float DeltaTime)
 
 		
 	}
-
+	*/
 	
 
 }
