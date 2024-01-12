@@ -32,6 +32,8 @@ public:
 	UPROPERTY()
 	FVector dir;
 
+	float maxTraceSpeed = 300;
+
 public:
 	UPROPERTY(EditAnywhere)
 	class UBossFSM* fsm;	

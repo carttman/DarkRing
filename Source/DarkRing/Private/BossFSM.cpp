@@ -5,6 +5,7 @@
 #include "../../../../../../../Source/Runtime/Engine/Classes/Kismet/GameplayStatics.h"
 #include "CppPlayer.h"
 #include "DarkSoules_Boss_Fight.h"
+#include "../../../../../../../Source/Runtime/Engine/Classes/GameFramework/CharacterMovementComponent.h"
 
 // Sets default values for this component's properties
 UBossFSM::UBossFSM()
@@ -35,6 +36,7 @@ void UBossFSM::TickComponent(float DeltaTime, ELevelTick TickType, FActorCompone
 {
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
 
+
 	if (target == nullptr) return;
 
 	switch (currState)
@@ -46,7 +48,10 @@ void UBossFSM::TickComponent(float DeltaTime, ELevelTick TickType, FActorCompone
 		UpdateMove();
 		break;
 	case EEnemyState::ATTACK:
-		UpdateAttack();
+		UpdateAttack(DeltaTime);
+		break;
+	case EEnemyState::DASH:
+		UpdateDash();
 		break;
 
 	default:
@@ -56,8 +61,14 @@ void UBossFSM::TickComponent(float DeltaTime, ELevelTick TickType, FActorCompone
 
 void UBossFSM::ChangeState(EEnemyState s)
 {
+	UEnum* enumPtr = FindObject<UEnum>(ANY_PACKAGE, TEXT("EEnemyState"), true);
+	if (enumPtr != nullptr) {
+		UE_LOG(LogTemp, Warning, TEXT("%s-------> %s"), *enumPtr->GetNameStringByIndex((int32)currState), *enumPtr->GetNameStringByIndex((int32)s));
+	}
+
 	currState = s;
 
+	currTime = 0;
 	switch (currState)
 	{
 	case EEnemyState::IDLE:
@@ -67,6 +78,8 @@ void UBossFSM::ChangeState(EEnemyState s)
 	case EEnemyState::ATTACK:
 		currTime = attackDelayTime;
 		break;
+	case EEnemyState::DASH:
+		dashCurrTime = 0;
 	default:
 		break;
 	}
@@ -74,11 +87,15 @@ void UBossFSM::ChangeState(EEnemyState s)
 
 void UBossFSM::UpdateIdle()
 {
+	myActor->GetCharacterMovement()->MaxWalkSpeed = 300;
+
 	FVector dir = target->GetActorLocation() - myActor->GetActorLocation();
 	float dist = dir.Length();
+
 	if (dist < traceRange) {
 		ChangeState(EEnemyState::MOVE);
 	}
+
 }
 
 void UBossFSM::UpdateMove()
@@ -86,27 +103,81 @@ void UBossFSM::UpdateMove()
 	FVector dir = target->GetActorLocation() - myActor->GetActorLocation();
 	myActor->AddMovementInput(dir.GetSafeNormal());
 	float dist = dir.Length();
+	//UE_LOG(LogTemp, Warning, TEXT("%f"), dist);
 	if (dist < attackRange) {
 		ChangeState(EEnemyState::ATTACK);
 	}
 
 }
 
-void UBossFSM::UpdateAttack()
+void UBossFSM::UpdateAttack(float deltaTime)
 {
-	currTime += GetWorld()->GetDeltaSeconds();
+	//UE_LOG(LogTemp, Warning, TEXT("%f"), currTime);
+	
+	
+	currTime += deltaTime;
 
+	/*
 	if (currTime > attackDelayTime) {
 		float dist = FVector::Distance(target->GetActorLocation(), myActor->GetActorLocation());
 
 		if (dist < attackRange) {
+			UE_LOG(LogTemp, Warning, TEXT("attack"));
 
 		}
 		else if (dist < traceRange) {
 			ChangeState(EEnemyState::MOVE);
 		}
-		else ChangeState(EEnemyState::IDLE);
+		else {
+			//UE_LOG(LogTemp, Warning, TEXT("reIdle"));
+			ChangeState(EEnemyState::IDLE);
+		}
+		currTime = 0;
 	}
-	currTime = 0;
+	*/
+
+	if (currTime > bombCoolTime) {
+		//주위에 강한데미지
+		UE_LOG(LogTemp, Warning, TEXT("bomb"));
+		ChangeState(EEnemyState::DASH);
+	}
+	else {
+		UE_LOG(LogTemp, Warning, TEXT("attack"));
+
+	}
+
+}
+
+void UBossFSM::UpdateDamaged(float deltaTime)
+{
+	currTime += deltaTime;
+	if (currTime > damageDelayTime) {
+		ChangeState(EEnemyState::IDLE);
+	}
+}
+
+void UBossFSM::UpdateDash()
+{
+	currTime += GetWorld()->GetDeltaSeconds();
+	if (currTime > dashDelayTime)
+	{
+		FVector dir = target->GetActorLocation() - myActor->GetActorLocation();
+
+		myActor->GetCharacterMovement()->MaxWalkSpeed = 1000;
+
+		//FVector through = dir.GetSafeNormal() 
+		myActor->AddMovementInput(dir.GetSafeNormal() + FVector(300));
+
+		if (dir.Length() < 130) {
+			ChangeState(EEnemyState::IDLE);
+
+		}
+	}
+	
+}
+
+void UBossFSM::UpdateBomb()
+{
+
 }
 

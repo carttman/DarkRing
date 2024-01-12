@@ -12,6 +12,9 @@
 #include <../../../../../../../Plugins/EnhancedInput/Source/EnhancedInput/Public/EnhancedInputComponent.h>
 #include <../../../../../../../Source/Runtime/Engine/Classes/Kismet/KismetMathLibrary.h>
 #include "PlayerAnim.h"
+#include "../../../../../../../Source/Runtime/Engine/Classes/Components/SceneComponent.h"
+#include "DarkSoules_Boss_Fight.h"
+#include "../../../../../../../Source/Runtime/Engine/Classes/Kismet/GameplayStatics.h"
 
 
 // Sets default values
@@ -84,9 +87,11 @@ ACppPlayer::ACppPlayer()
 	//camera 를 springArm 의 자식으로 셋팅
 	camera->SetupAttachment(springArm);
 
+	//-----------------------------------------------------------
+	sceneAttack = CreateDefaultSubobject<USceneComponent> (TEXT("SCENE"));
+	sceneAttack->SetupAttachment(GetMesh());
+	sceneAttack->SetRelativeLocation(FVector(-30, 0, 0));
 
-
-	
 }
 
 // Called when the game starts or when spawned
@@ -167,8 +172,23 @@ void ACppPlayer::MoveAction(FVector2d keyboardInput)
 	// dir 의 크기를 1로 만든다
 	dir.Normalize();
 
+
 	// dir 방향으로 움직여라
-	AddMovementInput(dir);
+
+
+	//--------------------- 플레이어가 보스 뚫고지나가지 않게(가까이 붙지 않게)
+
+	
+	
+	AActor* boss = UGameplayStatics::GetActorOfClass(GetWorld(), ADarkSoules_Boss_Fight::StaticClass());
+	if (boss != nullptr) {                      //보스 죽고나서도 에러 안나게
+		FVector distance = GetActorLocation() - boss->GetActorLocation();
+		float dist = abs(distance.Length());
+		if (dist > 120) AddMovementInput(dir);           //이거만 적으면 한번 붙고나서는 못움직임
+		else AddMovementInput(-forward);                 //붙으면 뒤로 살짝 빼서 움직일 수 있게
+
+	}
+	else AddMovementInput(dir);
 
 }
 

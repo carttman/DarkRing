@@ -7,6 +7,8 @@
 #include "Kismet/KismetMathLibrary.h"
 #include "CppPlayer.h"
 #include "BossFSM.h"
+#include "../../../../../../../Source/Runtime/Engine/Classes/GameFramework/CharacterMovementComponent.h"
+
 
 // Sets default values
 ADarkSoules_Boss_Fight::ADarkSoules_Boss_Fight()
@@ -15,7 +17,8 @@ ADarkSoules_Boss_Fight::ADarkSoules_Boss_Fight()
 	PrimaryActorTick.bCanEverTick = true;
 
 	fsm = CreateDefaultSubobject<UBossFSM>(TEXT("FSM"));
-
+	GetCharacterMovement()->bOrientRotationToMovement = true;
+	GetCharacterMovement()->MaxWalkSpeed = maxTraceSpeed;
 }
 
 // Called when the game starts or when spawned

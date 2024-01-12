@@ -11,7 +11,10 @@ enum class EEnemyState : uint8
 {
 	IDLE,
 	MOVE,
-	ATTACK
+	ATTACK,
+	DAMAGE,
+	DASH,
+	BOMB
 };
 
 
@@ -33,23 +36,36 @@ public:
 	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
 
 	EEnemyState currState = EEnemyState::IDLE;
+
 	class ACppPlayer* target;
 	class ADarkSoules_Boss_Fight* myActor;
 
 	UPROPERTY(EditAnywhere)
 	float traceRange = 1000;
 	UPROPERTY(EditAnywhere)
-	float attackRange = 150;
+	float attackRange = 300;
 
+	UPROPERTY(EditAnywhere)
 	float currTime = 0;
 	UPROPERTY(EditAnywhere)
 	float attackDelayTime = 2;
+	float damageDelayTime = 2;
+
+	UPROPERTY(EditAnywhere)
+	float dashCurrTime = 0;
+	float dashDelayTime = 3;
+
+	UPROPERTY(EditAnywhere)
+	float bombCoolTime = 3;
 
 public:
 	void ChangeState(EEnemyState s);
 	void UpdateIdle();
 	void UpdateMove();
-	void UpdateAttack();
+	void UpdateAttack(float deltaTime);
+	void UpdateDamaged(float deltaTime);
+	void UpdateDash();
+	void UpdateBomb();
 
 
 };
