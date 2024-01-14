@@ -87,7 +87,6 @@ void UBossFSM::ChangeState(EEnemyState s)
 
 void UBossFSM::UpdateIdle()
 {
-	myActor->GetCharacterMovement()->MaxWalkSpeed = 300;
 
 	FVector dir = target->GetActorLocation() - myActor->GetActorLocation();
 	float dist = dir.Length();
@@ -100,6 +99,8 @@ void UBossFSM::UpdateIdle()
 
 void UBossFSM::UpdateMove()
 {
+	myActor->GetCharacterMovement()->MaxWalkSpeed = 300;
+
 	FVector dir = target->GetActorLocation() - myActor->GetActorLocation();
 	myActor->AddMovementInput(dir.GetSafeNormal());
 	float dist = dir.Length();
@@ -159,19 +160,25 @@ void UBossFSM::UpdateDamaged(float deltaTime)
 void UBossFSM::UpdateDash()
 {
 	currTime += GetWorld()->GetDeltaSeconds();
-	if (currTime > dashDelayTime)
-	{
-		FVector dir = target->GetActorLocation() - myActor->GetActorLocation();
+	if (currTime > dashDelayTime){
+
+		FVector targetRight = target->GetActorLocation() + target->GetActorRightVector() * 130;
+
+		FVector dir = targetRight - myActor->GetActorLocation();
+
+		//UE_LOG(LogTemp, Warning, TEXT("%f"), dir);
 
 		myActor->GetCharacterMovement()->MaxWalkSpeed = 1000;
 
+		//myActor->SetActorLocation(dir);
+
 		//FVector through = dir.GetSafeNormal() 
-		myActor->AddMovementInput(dir.GetSafeNormal() + FVector(300));
-
-		if (dir.Length() < 130) {
+		myActor->AddMovementInput(dir.GetSafeNormal());
+		
+		if (dir.Length() < 150) {
 			ChangeState(EEnemyState::IDLE);
-
 		}
+		
 	}
 	
 }
