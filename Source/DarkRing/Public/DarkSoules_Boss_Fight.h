@@ -29,6 +29,14 @@ public:
 public:
 	UPROPERTY(EditAnywhere)
 	AActor* target;
+
 	UPROPERTY()
 	FVector dir;
+
+	float maxTraceSpeed = 300;
+	float dashDelayTime = 3;
+	float currTime = 0;
+public:
+	UPROPERTY(EditAnywhere)
+	class UBossFSM* fsm;	
 };

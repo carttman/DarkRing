@@ -85,5 +85,13 @@ public:
 
 	void UpdateCombo(float deltaTime);
 
+	///-------------------------------------
+	
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	class USceneComponent* sceneAttack;
 
+	
+
+	
+	
 };
