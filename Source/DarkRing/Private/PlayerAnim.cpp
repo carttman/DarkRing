@@ -3,6 +3,7 @@
 
 #include "PlayerAnim.h"
 #include "CppPlayer.h"
+#include <GameFramework/CharacterMovementComponent.h>
 
 UPlayerAnim::UPlayerAnim()
 {
@@ -38,9 +39,11 @@ void UPlayerAnim::NativeUpdateAnimation(float DeltaSeconds)
 		//5. speed에 값(내적) 할당하기
 		speed = FVector::DotProduct(forwardVector, Velocity);
 
+		// 플레이어가 현재 공중에 있는지 여부를 기억하고 싶다.
+		auto movement = player->GetCharacterMovement();
+		IsInAir = movement->IsFalling();
 	}
 	
-
 }
 
 void UPlayerAnim::NativeInitializeAnimation()
@@ -58,7 +61,6 @@ void UPlayerAnim::ComboAttackMontage(FName sectionName)
 	// 몽타주 섹션 점프(섹션 이름, 몽타주 파일 담은 변수)
 	Montage_JumpToSection(sectionName, AttackMontage);
 }
-
 
 
 

@@ -23,28 +23,11 @@ public:
 	//플레이어 이동 속도
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category=PlayerVariables)
 	float speed = 0;
-
-	//플레이어 서있는가?
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category=PlayerVariables)
-	bool bIsIdle = 1;
 	
 	//플레이어 점프상태인가?
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category=PlayerVariables)
-	bool bIsJuming = 1;
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category=PlayerVariables)
+	bool IsInAir = false;
 	
-	//플레이어 떨어지고있나?
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category=PlayerVariables)
-	bool bIsFalling = 1;
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = PlayerVariables)
-	TObjectPtr<class UCharacterMovementComponent> Movement;	
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = PlayerVariables)
-	float MovingThreshold;
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = PlayerVariables)
-	float JumpingThreshold;
-
 	//콤보 공격 몽타주 변수 선언
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = ComboAttack)
 	UAnimMontage* AttackMontage;
@@ -60,4 +43,5 @@ public:
 	//공격 몽타주 함수 선언
 	void ComboAttackMontage(FName sectionName);
 
+	
 };

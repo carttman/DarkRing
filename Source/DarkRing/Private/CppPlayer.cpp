@@ -111,7 +111,7 @@ void ACppPlayer::BeginPlay()
 	//camManager->ViewPitchMax = 60;
 
 	//점프 횟수 제한
-	JumpMaxCount = 2;
+	JumpMaxCount = 1;
 
 	// AplayerController 가져오자
 	APlayerController* playerController = Cast<APlayerController>(GetController());
@@ -189,7 +189,6 @@ void ACppPlayer::EnhancedJump()
 {
 
 		Jump();
-
 }
 
 void ACppPlayer::EnhancedMouse(const FInputActionValue& value)
@@ -206,13 +205,14 @@ void ACppPlayer::EnhancedMove(const FInputActionValue& value)
 
 	MoveAction(keyboardValue);
 
+
 }
 
 void ACppPlayer::EnhancedAttck(const struct FInputActionValue& value)
 {
 	// 만약 공중에 있는 상태라면 공격 못하도록 바로 리턴
 	if (GetCharacterMovement()->IsFalling()) return;
-	
+
 	// 애니메이션을 플레이 하고있는가? 불 변수 선언
 	bool playAnimation = false;
 
