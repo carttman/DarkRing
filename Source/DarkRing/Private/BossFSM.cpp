@@ -160,6 +160,7 @@ void UBossFSM::UpdateAttack(float deltaTime)
 	if (currTime > bombCoolTime) {
 		//주위에 강한데미지
 		UE_LOG(LogTemp, Warning, TEXT("bomb"));
+
 		ChangeState(EEnemyState::DASH);
 	}
 	else {
@@ -191,21 +192,36 @@ void UBossFSM::UpdateDash()
 
 		FVector dir = targetRight - myActor->GetActorLocation();
 
-		//UE_LOG(LogTemp, Warning, TEXT("%f"), dir);
+		start = true;
+		if (start) {
+			MoveDash(dir);
 
-		myActor->GetCharacterMovement()->MaxWalkSpeed = 3000;
-
-		//myActor->SetActorLocation(dir);
-
-		//FVector through = dir.GetSafeNormal() 
-
-
-
+		}
+	
 	}
 
 		
 
 	
+}
+
+void UBossFSM::MoveDash(FVector dir)
+{
+	start = false;
+	currTime = 0;
+
+	myActor->GetCharacterMovement()->MaxWalkSpeed = 3000;
+	myActor->AddMovementInput(dir);
+
+	//myActor->SetActorLocation(dir);
+
+	//FVector through = dir.GetSafeNormal() 
+
+	if (currTime > 5) {
+		ChangeState(EEnemyState::IDLE);
+	}
+
+
 }
 
 void UBossFSM::UpdateBomb()

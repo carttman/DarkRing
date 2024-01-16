@@ -71,6 +71,9 @@ public:
 	UPROPERTY(EditAnywhere)
 	float bombCoolTime = 5;
 
+	UPROPERTY(EditAnywhere)
+	bool start = true;
+
 public:
 	void ChangeState(EEnemyState s);
 	void UpdateIdle();
@@ -80,6 +83,7 @@ public:
 
 	void UpdateDamaged(float deltaTime);
 	void UpdateDash();
+	void MoveDash(FVector dir);
 	void UpdateBomb();
 
 
