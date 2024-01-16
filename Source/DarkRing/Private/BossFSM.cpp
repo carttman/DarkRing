@@ -188,14 +188,33 @@ void UBossFSM::UpdateDash()
 	{
 		FVector dir = target->GetActorLocation() - myActor->GetActorLocation();
 
-		myActor->GetCharacterMovement()->MaxWalkSpeed = 1000;
+		myActor->GetCharacterMovement()->MaxWalkSpeed = 3000;
 
 		//FVector through = dir.GetSafeNormal() 
-		myActor->AddMovementInput(dir.GetSafeNormal());
+		
+		
+		
+		
 
-		if (dir.Length() < 130) {
+		
+
+			myActor->AddMovementInput(dir.GetSafeNormal());
+
+			//myActor->SetActorLocation(stop);
+			
+			if (dir.Length() < 130) {
+
+				
+			}
+		
+
+
+		FVector stop = target->GetActorLocation() + target->GetActorForwardVector() * FVector(500);
+		
+		myActor->SetActorLocation(stop);
+		
+		if (currTime > 6) {
 			ChangeState(EEnemyState::IDLE);
-
 		}
 	}
 	

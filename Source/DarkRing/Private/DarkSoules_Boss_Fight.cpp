@@ -19,6 +19,12 @@ ADarkSoules_Boss_Fight::ADarkSoules_Boss_Fight()
 	fsm = CreateDefaultSubobject<UBossFSM>(TEXT("FSM"));
 	GetCharacterMovement()->bOrientRotationToMovement = true;
 	GetCharacterMovement()->MaxWalkSpeed = maxTraceSpeed;
+	
+	ConstructorHelpers::FObjectFinder<USkeletalMesh> tempMesh(TEXT("/Script/Engine.SkeletalMesh'/Game/ParagonSevarog/Characters/Heroes/Sevarog/Skins/Tier_1_5/MaskedReaper/Mesh/Sevarog_MaskedReaper_GDC.Sevarog_MaskedReaper_GDC'"));
+	if (tempMesh.Succeeded()) {
+		USkeletalMeshComponent* mesh = GetMesh();
+		mesh->SetSkeletalMesh(tempMesh.Object);
+	}
 }
 
 // Called when the game starts or when spawned
