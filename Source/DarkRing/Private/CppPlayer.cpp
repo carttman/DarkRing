@@ -95,10 +95,13 @@ ACppPlayer::ACppPlayer()
 	
 	//-----------------------------------------------------------
 	sceneAttack = CreateDefaultSubobject<USceneComponent> (TEXT("SCENE"));
-	sceneAttack->SetupAttachment(GetMesh());
+	sceneAttack->SetupAttachment(GetMesh(), TEXT("Sword_Tip"));	
 	sceneAttack->SetRelativeLocation(FVector(-30, 0, 0));
 
+	//bool hit = UKismetSystemLibrary::SphereTraceSingleForObjects(GetWorld(), sceneAttack->GetSocketLocation(), sceneAttack->GetSocketLocation(), 10.0f, TArray<EObjectTypeQuery::ObjectTypeQuery1>, )
+
 }
+
 
 // Called when the game starts or when spawned
 void ACppPlayer::BeginPlay()
@@ -180,21 +183,21 @@ void ACppPlayer::MoveAction(FVector2d keyboardInput)
 
 
 	// dir 방향으로 움직여라
-
+	AddMovementInput(dir);
 
 	//--------------------- 플레이어가 보스 뚫고지나가지 않게(가까이 붙지 않게)
 
 	
-	
-	AActor* boss = UGameplayStatics::GetActorOfClass(GetWorld(), ADarkSoules_Boss_Fight::StaticClass());
-	if (boss != nullptr) {                      //보스 죽고나서도 에러 안나게
-		FVector distance = GetActorLocation() - boss->GetActorLocation();
-		float dist = abs(distance.Length());
-		if (dist > 120) AddMovementInput(dir);           //이거만 적으면 한번 붙고나서는 못움직임
-		else AddMovementInput(-forward);                 //붙으면 뒤로 살짝 빼서 움직일 수 있게
-
-	}
-	else AddMovementInput(dir);
+// 	
+// 	AActor* boss = UGameplayStatics::GetActorOfClass(GetWorld(), ADarkSoules_Boss_Fight::StaticClass());
+// 	if (boss != nullptr) {                      //보스 죽고나서도 에러 안나게
+// 		FVector distance = GetActorLocation() - boss->GetActorLocation();
+// 		float dist = abs(distance.Length());
+// 		if (dist > 120) AddMovementInput(dir);           //이거만 적으면 한번 붙고나서는 못움직임
+// 		else AddMovementInput(-forward);                 //붙으면 뒤로 살짝 빼서 움직일 수 있게
+// 
+// 	}
+// 	else AddMovementInput(dir);
 
 }
 

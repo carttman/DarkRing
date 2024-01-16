@@ -69,7 +69,7 @@ public:
 	float dashDelayTime = 3;
 
 	UPROPERTY(EditAnywhere)
-	float bombCoolTime = 3;
+	float bombCoolTime = 5;
 
 public:
 	void ChangeState(EEnemyState s);
