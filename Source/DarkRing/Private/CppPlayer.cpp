@@ -73,6 +73,7 @@ ACppPlayer::ACppPlayer()
 	GetMesh()->SetRelativeLocation(FVector(0, 0, -88));
 	GetMesh()->SetRelativeRotation(FRotator(0, -90, 0)); //pitch, yaw, roll
 
+
 	//SpringArm 컴포넌트 생성
 	springArm = CreateDefaultSubobject<USpringArmComponent>(TEXT("springArm"));
 	//springArm 을 RootComponent 의 자식 (루프 컴포넌트는 디폴트 기본 자식임)
@@ -81,12 +82,17 @@ ACppPlayer::ACppPlayer()
 	springArm->SetRelativeLocation(FVector(0, 0, 90));
 	//springArm 각도 변경
 	springArm->SetRelativeRotation(FRotator(-30, 0, 0));
-
+	//springArm camera Collision 을 visibility 로 셋팅
+	springArm->ProbeChannel = ECollisionChannel::ECC_Visibility;
+	//ECollisionChannel Channel = ECollisionChannel::ECC_Visibility;
+	//ECollisionChannel::ECC_Visibility;
+	//springColl = TEnumAsByte<ECollisionChannel>(TEXT("Visibility"));
+	
 	//camera 컴포넌트 생성
 	camera = CreateDefaultSubobject<UCameraComponent>(TEXT("camera"));
 	//camera 를 springArm 의 자식으로 셋팅
 	camera->SetupAttachment(springArm);
-
+	
 	//-----------------------------------------------------------
 	sceneAttack = CreateDefaultSubobject<USceneComponent> (TEXT("SCENE"));
 	sceneAttack->SetupAttachment(GetMesh());

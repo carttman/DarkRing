@@ -31,6 +31,9 @@ public:
 public:
 	UPROPERTY(EditAnywhere)
 	class USpringArmComponent* springArm;
+	
+	// UPROPERTY(EditAnywhere)
+	// ECollisionChannel springColl = ECC_Visibility;
 
 	UPROPERTY(EditAnywhere)
 	class UCameraComponent* camera;
