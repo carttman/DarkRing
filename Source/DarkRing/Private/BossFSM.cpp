@@ -6,6 +6,7 @@
 #include "CppPlayer.h"
 #include "DarkSoules_Boss_Fight.h"
 #include "../../../../../../../Source/Runtime/Engine/Classes/GameFramework/CharacterMovementComponent.h"
+#include "BossAnim2.h"
 
 // Sets default values for this component's properties
 UBossFSM::UBossFSM()
@@ -14,7 +15,10 @@ UBossFSM::UBossFSM()
 	// off to improve performance if you don't need them.
 	PrimaryComponentTick.bCanEverTick = true;
 
-	// ...
+	ConstructorHelpers::FObjectFinder<UAnimMontage> tempMontage(TEXT("/Script/Engine.AnimMontage'/Game/KEJ/EJBluePrints/BossMontage.BossMontage'"));
+	if (tempMontage.Succeeded()) {
+		montage = tempMontage.Object;
+	}
 }
 
 
@@ -28,6 +32,9 @@ void UBossFSM::BeginPlay()
 
 	myActor = Cast<ADarkSoules_Boss_Fight>(GetOwner());
 	
+	USkeletalMeshComponent* mesh = myActor->GetMesh();
+	UAnimInstance* animInstance = mesh->GetAnimInstance();
+	anim = Cast<UBossAnim2>(animInstance);
 }
 
 
@@ -50,6 +57,8 @@ void UBossFSM::TickComponent(float DeltaTime, ELevelTick TickType, FActorCompone
 	case EEnemyState::ATTACK:
 		UpdateAttack(DeltaTime);
 		break;
+	case EEnemyState::DAMAGE:
+		UpdateDamaged(DeltaTime);
 	case EEnemyState::DASH:
 		UpdateDash();
 		break;
@@ -67,6 +76,7 @@ void UBossFSM::ChangeState(EEnemyState s)
 	}
 
 	currState = s;
+	anim->state = currState;
 
 	currTime = 0;
 	switch (currState)
@@ -75,8 +85,18 @@ void UBossFSM::ChangeState(EEnemyState s)
 		break;
 	case EEnemyState::MOVE:
 		break;
-	case EEnemyState::ATTACK:
+	case EEnemyState::ATTACK: {
 		currTime = attackDelayTime;
+		int32 rand = FMath::RandRange(0, 1);
+		anim->attackType = (EAttackType)rand;
+	}
+		break;
+	case EEnemyState::DAMAGE: {
+		int32 rand = FMath::RandRange(1, 2);
+		FString sectionName = FString::Printf(TEXT("Damage0%d"), rand);
+		myActor->PlayAnimMontage(montage, 1.0f, FName(sectionName));
+	}
+
 		break;
 	case EEnemyState::DASH:
 		dashCurrTime = 0;
@@ -149,6 +169,11 @@ void UBossFSM::UpdateAttack(float deltaTime)
 
 }
 
+void UBossFSM::UPdateAttackDelay()
+{
+
+}
+
 void UBossFSM::UpdateDamaged(float deltaTime)
 {
 	currTime += deltaTime;
@@ -174,8 +199,10 @@ void UBossFSM::UpdateDash()
 
 		//FVector through = dir.GetSafeNormal() 
 		myActor->AddMovementInput(dir.GetSafeNormal());
+
 		
 		if (dir.Length() < 150) {
+
 			ChangeState(EEnemyState::IDLE);
 		}
 		

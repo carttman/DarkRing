@@ -12,11 +12,17 @@ enum class EEnemyState : uint8
 	IDLE,
 	MOVE,
 	ATTACK,
+	ATTACK_DELAY,
 	DAMAGE,
 	DASH,
 	BOMB
 };
 
+UENUM(BlueprintType)
+enum class EAttackType : uint8 {
+	RIGHT,
+	LEFT
+};
 
 UCLASS( ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
 class DARKRING_API UBossFSM : public UActorComponent
@@ -37,8 +43,15 @@ public:
 
 	EEnemyState currState = EEnemyState::IDLE;
 
+	UPROPERTY(EditAnywhere)
 	class ACppPlayer* target;
+	UPROPERTY(EditAnywhere)
 	class ADarkSoules_Boss_Fight* myActor;
+
+	UPROPERTY(EditAnywhere)
+	class UBossAnim2* anim;
+	UPROPERTY(EditAnywhere)
+	class UAnimMontage* montage;
 
 	UPROPERTY(EditAnywhere)
 	float traceRange = 1000;
@@ -63,6 +76,8 @@ public:
 	void UpdateIdle();
 	void UpdateMove();
 	void UpdateAttack(float deltaTime);
+	void UPdateAttackDelay();
+
 	void UpdateDamaged(float deltaTime);
 	void UpdateDash();
 	void UpdateBomb();
