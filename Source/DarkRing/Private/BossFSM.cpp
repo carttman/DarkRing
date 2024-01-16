@@ -185,7 +185,7 @@ void UBossFSM::UpdateDamaged(float deltaTime)
 void UBossFSM::UpdateDash()
 {
 	currTime += GetWorld()->GetDeltaSeconds();
-	if (currTime > dashDelayTime){
+	if (currTime > dashDelayTime) {
 
 		FVector targetRight = target->GetActorLocation() + target->GetActorRightVector() * 130;
 
@@ -193,20 +193,18 @@ void UBossFSM::UpdateDash()
 
 		//UE_LOG(LogTemp, Warning, TEXT("%f"), dir);
 
-		myActor->GetCharacterMovement()->MaxWalkSpeed = 1000;
+		myActor->GetCharacterMovement()->MaxWalkSpeed = 3000;
 
 		//myActor->SetActorLocation(dir);
 
 		//FVector through = dir.GetSafeNormal() 
-		myActor->AddMovementInput(dir.GetSafeNormal());
 
-		
-		if (dir.Length() < 150) {
 
-			ChangeState(EEnemyState::IDLE);
-		}
-		
+
 	}
+
+		
+
 	
 }
 
