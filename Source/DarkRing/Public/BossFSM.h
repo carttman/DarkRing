@@ -66,13 +66,13 @@ public:
 
 	UPROPERTY(EditAnywhere)
 	float dashCurrTime = 0;
-	float dashDelayTime = 3;
+	float dashDelayTime = 0;
 
 	UPROPERTY(EditAnywhere)
 	float bombCoolTime = 5;
 
 	UPROPERTY(EditAnywhere)
-	bool start = true;
+	FVector dashDir;
 
 public:
 	void ChangeState(EEnemyState s);

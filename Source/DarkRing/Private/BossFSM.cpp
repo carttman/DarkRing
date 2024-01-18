@@ -99,7 +99,10 @@ void UBossFSM::ChangeState(EEnemyState s)
 
 		break;
 	case EEnemyState::DASH:
+	{
 		dashCurrTime = 0;
+		dashDir = target->GetActorLocation() - myActor->GetActorLocation();
+	}
 	default:
 		break;
 	}
@@ -164,7 +167,7 @@ void UBossFSM::UpdateAttack(float deltaTime)
 		ChangeState(EEnemyState::DASH);
 	}
 	else {
-		UE_LOG(LogTemp, Warning, TEXT("attack"));
+		//UE_LOG(LogTemp, Warning, TEXT("attack"));
 
 	}
 
@@ -185,41 +188,28 @@ void UBossFSM::UpdateDamaged(float deltaTime)
 
 void UBossFSM::UpdateDash()
 {
-	currTime += GetWorld()->GetDeltaSeconds();
-	if (currTime > dashDelayTime) {
-
-		FVector targetRight = target->GetActorLocation() + target->GetActorRightVector() * 130;
-
-		FVector dir = targetRight - myActor->GetActorLocation();
-
-		start = true;
-		if (start) {
-			MoveDash(dir);
-
-		}
 	
-	}
-
+	currTime += GetWorld()->GetDeltaSeconds();
 		
+	if (currTime > dashDelayTime) {
+	
 
+		myActor->GetCharacterMovement()->MaxWalkSpeed = 3000;
+		myActor->AddMovementInput(dashDir);
+
+		//myActor->SetActorLocation(dir);
+
+		if (currTime > 1) {
+			ChangeState(EEnemyState::IDLE);
+		}
+
+	}
 	
 }
 
 void UBossFSM::MoveDash(FVector dir)
 {
-	start = false;
-	currTime = 0;
 
-	myActor->GetCharacterMovement()->MaxWalkSpeed = 3000;
-	myActor->AddMovementInput(dir);
-
-	//myActor->SetActorLocation(dir);
-
-	//FVector through = dir.GetSafeNormal() 
-
-	if (currTime > 5) {
-		ChangeState(EEnemyState::IDLE);
-	}
 
 
 }
