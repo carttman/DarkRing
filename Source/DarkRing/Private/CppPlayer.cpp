@@ -58,6 +58,13 @@ ACppPlayer::ACppPlayer()
 		ia_Attack = tempIAAttack.Object;
 	}
 
+	// ia_Rolling 파일 읽어오자
+	ConstructorHelpers::FObjectFinder<UInputAction> tempIARolling(TEXT("/Script/EnhancedInput.InputAction'/Game/Input/IA_Rolling.IA_Rolling'"));
+	if (tempIARolling.Succeeded())
+	{
+		ia_Rolling = tempIARolling.Object;
+	}
+
 	//Skeletal Mesh 읽어오기
 	ConstructorHelpers::FObjectFinder<USkeletalMesh> tempMesh(TEXT("/Script/Engine.SkeletalMesh'/Game/ParagonAurora/Characters/Heroes/Aurora/Skins/GlacialEmpress/Meshes/Aurora_GlacialEmpress.Aurora_GlacialEmpress'"));
 
@@ -73,6 +80,7 @@ ACppPlayer::ACppPlayer()
 	GetMesh()->SetRelativeLocation(FVector(0, 0, -88));
 	GetMesh()->SetRelativeRotation(FRotator(0, -90, 0)); //pitch, yaw, roll
 
+
 	//SpringArm 컴포넌트 생성
 	springArm = CreateDefaultSubobject<USpringArmComponent>(TEXT("springArm"));
 	//springArm 을 RootComponent 의 자식 (루프 컴포넌트는 디폴트 기본 자식임)
@@ -81,12 +89,17 @@ ACppPlayer::ACppPlayer()
 	springArm->SetRelativeLocation(FVector(0, 0, 90));
 	//springArm 각도 변경
 	springArm->SetRelativeRotation(FRotator(-30, 0, 0));
-
+	//springArm camera Collision 을 visibility 로 셋팅
+	springArm->ProbeChannel = ECollisionChannel::ECC_Visibility;
+	//ECollisionChannel Channel = ECollisionChannel::ECC_Visibility;
+	//ECollisionChannel::ECC_Visibility;
+	//springColl = TEnumAsByte<ECollisionChannel>(TEXT("Visibility"));
+	
 	//camera 컴포넌트 생성
 	camera = CreateDefaultSubobject<UCameraComponent>(TEXT("camera"));
 	//camera 를 springArm 의 자식으로 셋팅
 	camera->SetupAttachment(springArm);
-
+	
 	//-----------------------------------------------------------
 	sceneAttack = CreateDefaultSubobject<USceneComponent> (TEXT("SCENE"));
 	sceneAttack->SetupAttachment(GetMesh(), TEXT("Sword_Tip"));	
@@ -120,6 +133,8 @@ void ACppPlayer::BeginPlay()
 
 	//점프 횟수 제한
 	JumpMaxCount = 1;
+	//점프 중력 수치 설정
+	GetCharacterMovement()->GravityScale = 2;
 
 	// AplayerController 가져오자
 	APlayerController* playerController = Cast<APlayerController>(GetController());
@@ -160,6 +175,9 @@ void ACppPlayer::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent
 		input->BindAction(ia_Move, ETriggerEvent::Triggered, this, &ACppPlayer::EnhancedMove);
 
 		input->BindAction(ia_Attack, ETriggerEvent::Triggered, this, &ACppPlayer::EnhancedAttck);
+
+		input->BindAction(ia_Rolling, ETriggerEvent::Triggered, this, &ACppPlayer::EnhancedRolling);
+
 	}
 
 }
@@ -210,7 +228,6 @@ void ACppPlayer::InputVertical(float value)
 
 void ACppPlayer::EnhancedJump()
 {
-
 		Jump();
 }
 
@@ -236,9 +253,12 @@ void ACppPlayer::EnhancedAttck(const struct FInputActionValue& value)
 	// 만약 공중에 있는 상태라면 공격 못하도록 바로 리턴
 	if (GetCharacterMovement()->IsFalling()) return;
 
+	// 만약 구르기중이면 공격 못하게
+	isRolling = false;
+	
+
 	// 애니메이션을 플레이 하고있는가? 불 변수 선언
 	bool playAnimation = false;
-
 	
 	// 섹션 점프를 하기위한 sectionName 선언
 	FName sectionName = TEXT("");
@@ -260,6 +280,9 @@ void ACppPlayer::EnhancedAttck(const struct FInputActionValue& value)
 		//공격하고 있을 때 점프 막자
 		GetCharacterMovement()->SetJumpAllowed(false);
 
+		//구르기 비활성화
+		isRolling = false;
+
 		
 		
 	}
@@ -280,7 +303,10 @@ void ACppPlayer::EnhancedAttck(const struct FInputActionValue& value)
 
 			//플레이어 이동 정지
 			GetCharacterMovement()->SetMovementMode(MOVE_None);
-			//공격하고 있을 때 점프 막자
+
+			//구르기 비활성화
+			isRolling = false;
+
 			
 
 		}
@@ -295,7 +321,7 @@ void ACppPlayer::EnhancedAttck(const struct FInputActionValue& value)
 			// 콤보 카운트 1 증가시키고 현재시간 0 으로 초기화 
 			comboCnt++;
 			comboCurrTime = 0;
-			UE_LOG(LogTemp, Warning, TEXT("%d번째 공격 모션"), comboCnt);
+			UE_LOG(LogTemp, Warning, TEXT("%d타"), comboCnt);
 
 			playAnimation = true;
 			sectionName = TEXT("Attack3");
@@ -303,6 +329,8 @@ void ACppPlayer::EnhancedAttck(const struct FInputActionValue& value)
 			//플레이어 이동 정지
 			GetCharacterMovement()->SetMovementMode(MOVE_None);
 			
+			// 구르기 비활성화
+			isRolling = false;
 
 		}
 	}
@@ -317,6 +345,39 @@ void ACppPlayer::EnhancedAttck(const struct FInputActionValue& value)
 	}
 }
 
+
+void ACppPlayer::EnhancedRolling(const struct FInputActionValue& value)
+{		
+	
+	// 만약 공중에 있는 상태라면 공격 못하도록 바로 리턴
+	if (GetCharacterMovement()->IsFalling()) return;
+
+	// 애니메이션을 플레이 하고있는가? 불 변수 선언
+	bool playAnimation = false;
+	// 섹션 점프를 하기위한 sectionName 선언
+	FName sectionName = TEXT("");
+
+	// 만약 구르기가 가능하면 
+	if (isRolling == true)
+	{
+		playAnimation = true;
+
+		sectionName = TEXT("Rolling");
+		GetCharacterMovement()->DoJump(isRolling);
+
+		// 구르기 로그 출력
+		UE_LOG(LogTemp, Warning, TEXT("구르기"));
+
+	}
+
+	// 나 애니메이션 플레이 해야 하니?
+	if (playAnimation == true)
+	{
+		// AnimInstance를 가져오기
+		auto AnimInstance = Cast<UPlayerAnim>(GetMesh()->GetAnimInstance());
+		AnimInstance->RollingDodgeMontage(sectionName);
+	}
+}
 
 void ACppPlayer::UpdateCombo(float deltaTime)
 {
@@ -335,6 +396,8 @@ void ACppPlayer::UpdateCombo(float deltaTime)
 			GetCharacterMovement()->SetMovementMode(MOVE_Walking);
 			GetCharacterMovement()->SetJumpAllowed(true);
 
+			//구르기 활성화
+			isRolling = true;
 			
 		}
 	}

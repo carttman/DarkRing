@@ -8,11 +8,19 @@
 UPlayerAnim::UPlayerAnim()
 {
 	// Combo Attack 몽타주를 파일 읽어오자
-	static ConstructorHelpers::FObjectFinder<UAnimMontage> AM(TEXT("/Script/Engine.AnimMontage'/Game/Animation/AM_Combo_Attack.AM_Combo_Attack'"));
-	if (AM.Succeeded()) //가져오기 성공시 
+	static ConstructorHelpers::FObjectFinder<UAnimMontage> AMCA(TEXT("/Script/Engine.AnimMontage'/Game/Animation/AM_Combo_Attack.AM_Combo_Attack'"));
+	if (AMCA.Succeeded()) //가져오기 성공시 
 	{
 			// 선언한 AttackMontage 변수에 object 전달
-			AttackMontage = AM.Object;
+			AttackMontage = AMCA.Object;
+	}
+
+	// Rolling 몽타주 파일 읽어오자
+	static ConstructorHelpers::FObjectFinder<UAnimMontage> AMR(TEXT("/Script/Engine.AnimMontage'/Game/Animation/AM_Rolling.AM_Rolling'"));
+	if (AMR.Succeeded())
+	{
+		// 선언한 RollingMontage 변수에 object 전달
+		RollingMontage = AMR.Object;
 	}
 }
 
@@ -62,5 +70,14 @@ void UPlayerAnim::ComboAttackMontage(FName sectionName)
 	Montage_JumpToSection(sectionName, AttackMontage);
 }
 
+void UPlayerAnim::RollingDodgeMontage(FName sectionName)
+{
+	// 몽타주 실행(몽타주 파일 담은 변수, 플레이 시간)
+	Montage_Play(RollingMontage, 1.f);
+
+	// 몽타주 섹션 점프
+	Montage_JumpToSection(sectionName, RollingMontage);
+
+}
 
 
