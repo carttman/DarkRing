@@ -43,6 +43,7 @@ public:
 
 	float moveSpeed = 500;
 
+
 	// Input Mapping Context 담을 변수
 	UPROPERTY(EditAnywhere)
 	class UInputMappingContext* imcDefault;
@@ -73,11 +74,19 @@ public:
 	float comboMaxTime = 0.8f;
 	float comboCurrTime = 0;
 
+	float nowRollingTime = 0;
+	//가능하면 애니메이션에서 직접 얻어오기
+	float maxRollingTime = 1;
 	
 	
+	
+	FVector rollingDir = FVector(0);
 	
 	// 구르기중인가?
 	bool isRolling = false;
+
+	bool whileRolling = false;
+	float rollingSpeed = 1000;
 
 	UPROPERTY(EditAnywhere)
 	class UAnimMontage* AttackMontage;
@@ -99,6 +108,8 @@ public:
 	void EnhancedRolling(const struct FInputActionValue& value);
 
 	void UpdateCombo(float deltaTime);
+
+	void UpdateRolling(float deltaTime);
 
 	///-------------------------------------
 	
