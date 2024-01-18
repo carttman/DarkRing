@@ -14,8 +14,8 @@ enum class EEnemyState : uint8
 	ATTACK,
 	ATTACK_DELAY,
 	DAMAGE,
-	DASH,
-	BOMB
+	BOMB,
+	DASH
 };
 
 UENUM(BlueprintType)
@@ -61,15 +61,19 @@ public:
 	UPROPERTY(EditAnywhere)
 	float currTime = 0;
 	UPROPERTY(EditAnywhere)
-	float attackDelayTime = 2;
+	float attackDelayTime = 1;
 	float damageDelayTime = 2;
+
+// 	UPROPERTY(EditAnywhere)
+// 	int attackCount = 0;
 
 	UPROPERTY(EditAnywhere)
 	float dashCurrTime = 0;
-	float dashDelayTime = 0;
+	float dashDelayTime = 3;
 
+	//플레이어 도망갈 시간
 	UPROPERTY(EditAnywhere)
-	float bombCoolTime = 5;
+	float bombReadyTime = 5; 
 
 	UPROPERTY(EditAnywhere)
 	FVector dashDir;
@@ -78,13 +82,15 @@ public:
 	void ChangeState(EEnemyState s);
 	void UpdateIdle();
 	void UpdateMove();
-	void UpdateAttack(float deltaTime);
+	void UpdateAttack();
 	void UPdateAttackDelay();
 
-	void UpdateDamaged(float deltaTime);
-	void UpdateDash();
-	void MoveDash(FVector dir);
+	void UpdateDamaged();
+
 	void UpdateBomb();
+	void UpdateDash();
+
+	bool IsWaitComplete(float delay);
 
 
 };

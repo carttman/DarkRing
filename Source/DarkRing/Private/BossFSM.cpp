@@ -55,10 +55,13 @@ void UBossFSM::TickComponent(float DeltaTime, ELevelTick TickType, FActorCompone
 		UpdateMove();
 		break;
 	case EEnemyState::ATTACK:
-		UpdateAttack(DeltaTime);
+		UpdateAttack();
 		break;
 	case EEnemyState::DAMAGE:
-		UpdateDamaged(DeltaTime);
+		UpdateDamaged();
+	case EEnemyState::BOMB:
+		UpdateBomb();
+		break;
 	case EEnemyState::DASH:
 		UpdateDash();
 		break;
@@ -96,7 +99,11 @@ void UBossFSM::ChangeState(EEnemyState s)
 		FString sectionName = FString::Printf(TEXT("Damage0%d"), rand);
 		myActor->PlayAnimMontage(montage, 1.0f, FName(sectionName));
 	}
-
+		break;
+	case EEnemyState::BOMB:
+		dashCurrTime = 0;
+		UE_LOG(LogTemp, Warning, TEXT("bomb"));
+		//attackCount = 0;
 		break;
 	case EEnemyState::DASH:
 	{
@@ -110,6 +117,7 @@ void UBossFSM::ChangeState(EEnemyState s)
 
 void UBossFSM::UpdateIdle()
 {
+	myActor->GetCharacterMovement()->MaxWalkSpeed = 300;
 
 	FVector dir = target->GetActorLocation() - myActor->GetActorLocation();
 	float dist = dir.Length();
@@ -134,40 +142,33 @@ void UBossFSM::UpdateMove()
 
 }
 
-void UBossFSM::UpdateAttack(float deltaTime)
+void UBossFSM::UpdateAttack()
 {
 	//UE_LOG(LogTemp, Warning, TEXT("%f"), currTime);
-	
-	
-	currTime += deltaTime;
 
-	/*
-	if (currTime > attackDelayTime) {
+	dashCurrTime += GetWorld()->DeltaTimeSeconds;
+	
+	if (IsWaitComplete(attackDelayTime)) {
 		float dist = FVector::Distance(target->GetActorLocation(), myActor->GetActorLocation());
 
 		if (dist < attackRange) {
 			UE_LOG(LogTemp, Warning, TEXT("attack"));
+			//attackCount++;
+			currTime = 0;
+
+			if (dashCurrTime> dashDelayTime) {
+				UE_LOG(LogTemp, Warning, TEXT("run"));
+				ChangeState(EEnemyState::BOMB);
+			}
 
 		}
-		else if (dist < traceRange) {
-			ChangeState(EEnemyState::MOVE);
-		}
-		else {
-			//UE_LOG(LogTemp, Warning, TEXT("reIdle"));
-			ChangeState(EEnemyState::IDLE);
-		}
-		currTime = 0;
-	}
-	*/
-
-	if (currTime > bombCoolTime) {
-		//주위에 강한데미지
-		UE_LOG(LogTemp, Warning, TEXT("bomb"));
-
-		ChangeState(EEnemyState::DASH);
-	}
-	else {
-		//UE_LOG(LogTemp, Warning, TEXT("attack"));
+// 		else if (dist < traceRange) {
+// 			ChangeState(EEnemyState::MOVE);
+// 		}
+// 		else {
+// 			//UE_LOG(LogTemp, Warning, TEXT("reIdle"));
+// 			ChangeState(EEnemyState::IDLE);
+// 		}
 
 	}
 
@@ -178,44 +179,54 @@ void UBossFSM::UPdateAttackDelay()
 
 }
 
-void UBossFSM::UpdateDamaged(float deltaTime)
+void UBossFSM::UpdateDamaged()
 {
-	currTime += deltaTime;
-	if (currTime > damageDelayTime) {
+	if (IsWaitComplete(damageDelayTime)) {
 		ChangeState(EEnemyState::IDLE);
 	}
 }
 
-void UBossFSM::UpdateDash()
-{
-	
-	currTime += GetWorld()->GetDeltaSeconds();
-		
-	if (currTime > dashDelayTime) {
-	
-
-		myActor->GetCharacterMovement()->MaxWalkSpeed = 3000;
-		myActor->AddMovementInput(dashDir);
-
-		//myActor->SetActorLocation(dir);
-
-		if (currTime > 1) {
-			ChangeState(EEnemyState::IDLE);
-		}
-
-	}
-	
-}
-
-void UBossFSM::MoveDash(FVector dir)
-{
-
-
-
-}
 
 void UBossFSM::UpdateBomb()
 {
+	if (IsWaitComplete(bombReadyTime)) {
+		//주위에 강한데미지
+
+		UE_LOG(LogTemp, Warning, TEXT("bomb ing"));
+
+// 		currTime = 0;
+// 		if (IsWaitComplete(3)) {
+ 			ChangeState(EEnemyState::DASH);
+//		}
+ 	}
+ 	else {
+ 		//모션 상태로 멈춰있음
+		UE_LOG(LogTemp, Warning, TEXT("ANIM"));
+
+ 	}
+}
+
+void UBossFSM::UpdateDash()
+{
+	//바로 Dash		
+		myActor->GetCharacterMovement()->MaxWalkSpeed = 3000;
+
+		myActor->AddMovementInput(dashDir);
+
+		if (IsWaitComplete(1)) {
+			ChangeState(EEnemyState::IDLE);
+		}
+
+
+}
+
+bool UBossFSM::IsWaitComplete(float delay)
+{
+	currTime += GetWorld()->DeltaTimeSeconds;
+	if (currTime >= delay) {
+		return true;
+	}
+	return false;
 
 }
 
