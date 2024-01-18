@@ -56,7 +56,7 @@ public:
 	UPROPERTY(EditAnywhere)
 	float traceRange = 1000;
 	UPROPERTY(EditAnywhere)
-	float attackRange = 300;
+	float attackRange = 200;
 
 	UPROPERTY(EditAnywhere)
 	float currTime = 0;
