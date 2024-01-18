@@ -63,16 +63,27 @@ public:
 	UPROPERTY(EditAnywhere)
 	class UInputAction* ia_Attack;
 
+	//InputAction Rolling
+	UPROPERTY(EditAnywhere)
+	class UInputAction* ia_Rolling;
+
 	//콤보 카운트와 콤보 타이밍 시간 변수
 	int32 comboCnt = 0;
 	float comboMinTime = 0.5f;
 	float comboMaxTime = 0.8f;
 	float comboCurrTime = 0;
 
+	
+	
+	
+	// 구르기중인가?
+	bool isRolling = false;
 
 	UPROPERTY(EditAnywhere)
 	class UAnimMontage* AttackMontage;
 
+	UPROPERTY(EditAnywhere)
+	class UAnimMontage* RollingMontage;
 public:
 
 	void MoveAction(FVector2d keyboardInput);
@@ -85,6 +96,7 @@ public:
 	void EnhancedMove(const struct FInputActionValue& value);
 
 	void EnhancedAttck(const struct FInputActionValue& value);
+	void EnhancedRolling(const struct FInputActionValue& value);
 
 	void UpdateCombo(float deltaTime);
 

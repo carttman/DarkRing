@@ -32,6 +32,10 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = ComboAttack)
 	UAnimMontage* AttackMontage;
 
+	//구르기 몽타주 변수 선언
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Rolling)
+	UAnimMontage* RollingMontage;
+
 public:
 	
 
@@ -42,6 +46,7 @@ public:
 
 	//공격 몽타주 함수 선언
 	void ComboAttackMontage(FName sectionName);
+	//구르기 몽타주 함수 선언
+	void RollingDodgeMontage(FName sectionName);
 
-	
 };
