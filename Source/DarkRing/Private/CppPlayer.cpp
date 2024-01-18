@@ -156,7 +156,9 @@ void ACppPlayer::Tick(float DeltaTime)
 
 	//업데이트 콤보의 델타타임 증가시켜라 / 초를 증가시켜라
 	UpdateCombo(DeltaTime);
+	
 
+	UpdateRolling(DeltaTime);
 }
 
 // Enhanced Input BindAction은 여기에
@@ -193,9 +195,16 @@ void ACppPlayer::MoveAction(FVector2d keyboardInput)
 	// dir 의 크기를 1로 만든다
 	dir.Normalize();
 
-
+	if(!whileRolling)
+	{
+		//if(dir.X == 0 && dir.Y >= 0)
+		rollingDir = dir;
+		//right * keyboardInput.X;
+		AddMovementInput(dir);
+	}
+	
 	// dir 방향으로 움직여라
-	AddMovementInput(dir);
+	
 
 	//--------------------- 플레이어가 보스 뚫고지나가지 않게(가까이 붙지 않게)
 
@@ -253,7 +262,8 @@ void ACppPlayer::EnhancedAttck(const struct FInputActionValue& value)
 	// 만약 공중에 있는 상태라면 공격 못하도록 바로 리턴
 	if (GetCharacterMovement()->IsFalling()) return;
 
-	// 만약 구르기중이면 공격 못하게
+	
+	// 만약 공격중이면 구르기 못하게
 	isRolling = false;
 	
 
@@ -360,10 +370,16 @@ void ACppPlayer::EnhancedRolling(const struct FInputActionValue& value)
 	// 만약 구르기가 가능하면 
 	if (isRolling == true)
 	{
+
+		//롤링
+		whileRolling = true;
+		GetCharacterMovement()->MaxWalkSpeed = rollingSpeed;
 		playAnimation = true;
 
 		sectionName = TEXT("Rolling");
-		GetCharacterMovement()->DoJump(isRolling);
+
+
+		//GetCharacterMovement()->DoJump(isRolling);
 
 		// 구르기 로그 출력
 		UE_LOG(LogTemp, Warning, TEXT("구르기"));
@@ -403,4 +419,22 @@ void ACppPlayer::UpdateCombo(float deltaTime)
 	}
 }
 
+void ACppPlayer::UpdateRolling(float deltaTime)
+{
+
+	if (whileRolling)
+	{
+		nowRollingTime += GetWorld()->GetDeltaSeconds();
+		//롤링 방향이 0이 아닌 처리 테스트 필요
+		if (rollingDir != FVector(0))
+			AddMovementInput(rollingDir);
+
+	}
+	if (nowRollingTime >= maxRollingTime)
+	{
+		whileRolling = false;
+		nowRollingTime = 0;
+		GetCharacterMovement()->MaxWalkSpeed = moveSpeed;
+	}
+}
 
