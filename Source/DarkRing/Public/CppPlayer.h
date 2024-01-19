@@ -73,20 +73,20 @@ public:
 	float comboMinTime = 0.5f;
 	float comboMaxTime = 0.8f;
 	float comboCurrTime = 0;
+	bool isAttacking = false;
 
 	float nowRollingTime = 0;
 	//가능하면 애니메이션에서 직접 얻어오기
-	float maxRollingTime = 1;
-	
-	
+	float maxRollingTime = 0.5f;
 	
 	FVector rollingDir = FVector(0);
 	
-	// 구르기중인가?
+	// 구르기를 할 수 있는가?
 	bool isRolling = false;
-
+	// 구르기 중인가??
 	bool whileRolling = false;
-	float rollingSpeed = 1000;
+	//구르기 속도
+	float rollingSpeed = 1200;
 
 	UPROPERTY(EditAnywhere)
 	class UAnimMontage* AttackMontage;
