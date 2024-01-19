@@ -157,7 +157,7 @@ void ACppPlayer::Tick(float DeltaTime)
 	//업데이트 콤보의 델타타임 증가시켜라 / 초를 증가시켜라
 	UpdateCombo(DeltaTime);
 	
-
+	//구르기
 	UpdateRolling(DeltaTime);
 }
 
@@ -234,7 +234,6 @@ void ACppPlayer::InputVertical(float value)
 
 }
 
-
 void ACppPlayer::EnhancedJump()
 {
 		Jump();
@@ -254,18 +253,17 @@ void ACppPlayer::EnhancedMove(const FInputActionValue& value)
 
 	MoveAction(keyboardValue);
 
-
 }
 
 void ACppPlayer::EnhancedAttck(const struct FInputActionValue& value)
 {
 	// 만약 공중에 있는 상태라면 공격 못하도록 바로 리턴
 	if (GetCharacterMovement()->IsFalling()) return;
-
+	// 구르기 중이면 공격 못하게
+	if (whileRolling) return;
 	
 	// 만약 공격중이면 구르기 못하게
 	isRolling = false;
-	
 
 	// 애니메이션을 플레이 하고있는가? 불 변수 선언
 	bool playAnimation = false;
@@ -370,16 +368,22 @@ void ACppPlayer::EnhancedRolling(const struct FInputActionValue& value)
 	// 만약 구르기가 가능하면 
 	if (isRolling == true)
 	{
+		//구르기 도중 구르기 금지
+		isRolling = false;
 
-		//롤링
+		//구르기 중이다
 		whileRolling = true;
+
+		//캐릭터 무브먼트를 구르는동안 롤링스피드로
 		GetCharacterMovement()->MaxWalkSpeed = rollingSpeed;
+
 		playAnimation = true;
-
 		sectionName = TEXT("Rolling");
-
-
-		//GetCharacterMovement()->DoJump(isRolling);
+		
+		//점프 막자
+		GetCharacterMovement()->SetJumpAllowed(false);
+		//공격 못하게 하자
+		
 
 		// 구르기 로그 출력
 		UE_LOG(LogTemp, Warning, TEXT("구르기"));
@@ -391,6 +395,7 @@ void ACppPlayer::EnhancedRolling(const struct FInputActionValue& value)
 	{
 		// AnimInstance를 가져오기
 		auto AnimInstance = Cast<UPlayerAnim>(GetMesh()->GetAnimInstance());
+		// AnimInstance 값을 구르기Montage에 넣겠다
 		AnimInstance->RollingDodgeMontage(sectionName);
 	}
 }
@@ -421,19 +426,33 @@ void ACppPlayer::UpdateCombo(float deltaTime)
 
 void ACppPlayer::UpdateRolling(float deltaTime)
 {
-
+	//만약 구르기 중이면
 	if (whileRolling)
-	{
+	{	
+		//현재 구르기 시간에 델타타임 증가
 		nowRollingTime += GetWorld()->GetDeltaSeconds();
-		//롤링 방향이 0이 아닌 처리 테스트 필요
+		//롤링 방향이 0이 아니면
 		if (rollingDir != FVector(0))
+		{ 
+			//구르기 식 계산한 무브먼트 실행
 			AddMovementInput(rollingDir);
+		}
 
 	}
+	//만약 현재 구르기 시간이 맥스를 넘었을 때 (구르기가 끝나면)
 	if (nowRollingTime >= maxRollingTime)
 	{
+		//구르기 중이 아님
 		whileRolling = false;
+		//현재 구르기 시간 초기화
 		nowRollingTime = 0;
+		//구르기 끝났으니 다시 구르기 가능
+		isRolling = true;
+
+		// 움직임, 점프 활성화
+		GetCharacterMovement()->SetJumpAllowed(true);
+
+		//다시 기본 이동속도로 바꿔라
 		GetCharacterMovement()->MaxWalkSpeed = moveSpeed;
 	}
 }
