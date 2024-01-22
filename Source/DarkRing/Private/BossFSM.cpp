@@ -7,6 +7,7 @@
 #include "DarkSoules_Boss_Fight.h"
 #include "../../../../../../../Source/Runtime/Engine/Classes/GameFramework/CharacterMovementComponent.h"
 #include "BossAnim2.h"
+#include "EnergySphere.h"
 
 // Sets default values for this component's properties
 UBossFSM::UBossFSM()
@@ -19,6 +20,11 @@ UBossFSM::UBossFSM()
 	if (tempMontage.Succeeded()) {
 		montage = tempMontage.Object;
 	}
+	ConstructorHelpers::FClassFinder<AEnergySphere> tempESphere(TEXT("/Script/Engine.Blueprint'/Game/KEJ/EJBluePrints/BP_Energy_Sphere.BP_Energy_Sphere_C'"));
+	if (tempESphere.Succeeded()) {
+		energySphere = tempESphere.Class;
+	}
+
 }
 
 
@@ -31,6 +37,7 @@ void UBossFSM::BeginPlay()
 	target = Cast<ACppPlayer>(findActor);
 
 	myActor = Cast<ADarkSoules_Boss_Fight>(GetOwner());
+	
 	
 	USkeletalMeshComponent* mesh = myActor->GetMesh();
 	UAnimInstance* animInstance = mesh->GetAnimInstance();
@@ -225,7 +232,7 @@ void UBossFSM::UpdateBomb()
 // 		currTime = 0;
 // 		if (IsWaitComplete(3)) {
  			ChangeState(EEnemyState::DASH);
-			SpawnedActorRef->Destroy();
+			//SpawnedActorRef->Destroy();
 
 //		}
  	}
@@ -237,8 +244,12 @@ void UBossFSM::UpdateBomb()
 
 
 		if (makeSphere) {
-			FActorSpawnParameters SpawnParams;
-			SpawnedActorRef = GetWorld()->SpawnActor<AActor>(energySphere, myActor->GetActorLocation(), myActor->GetActorRotation(), SpawnParams);
+			//FActorSpawnParameters SpawnParams;
+			for (int i = 0; i < 5; i++){
+				//SpawnedActorRef = 
+				GetWorld()->SpawnActor<AEnergySphere>(energySphere, myActor->GetActorLocation(), myActor->GetActorRotation());
+
+			}
 
 			makeSphere = false;
 
