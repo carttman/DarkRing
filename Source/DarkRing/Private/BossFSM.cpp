@@ -217,7 +217,8 @@ void UBossFSM::UpdateDamaged()
 
 void UBossFSM::UpdateBomb()
 {
-	if (IsWaitComplete(bombReadyTime)) {
+/*
+if (IsWaitComplete(bombReadyTime)) {
 		//주위에 강한데미지
 
 		UE_LOG(LogTemp, Warning, TEXT("bomb ing"));
@@ -244,6 +245,7 @@ void UBossFSM::UpdateBomb()
 
 		}
  	}
+*/	
 }
 
 void UBossFSM::UpdateDash()

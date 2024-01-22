@@ -91,6 +91,8 @@ ACppPlayer::ACppPlayer()
 	springArm->SetRelativeRotation(FRotator(-30, 0, 0));
 	//springArm camera Collision 을 visibility 로 셋팅
 	springArm->ProbeChannel = ECollisionChannel::ECC_Visibility;
+	
+	springArm->TargetArmLength = 500;
 	//ECollisionChannel Channel = ECollisionChannel::ECC_Visibility;
 	//ECollisionChannel::ECC_Visibility;
 	//springColl = TEnumAsByte<ECollisionChannel>(TEXT("Visibility"));
