@@ -243,18 +243,18 @@ if (IsWaitComplete(bombReadyTime)) {
 
 		//UGameplayStatics::SpawnObject(energySphere,)
 
+			if (makeSphere) {
+				//FActorSpawnParameters SpawnParams;
+				for (int i = 0; i < 5; i++) {
+					//SpawnedActorRef = 
+					GetWorld()->SpawnActor<AEnergySphere>(energySphere, myActor->GetActorLocation(), myActor->GetActorRotation());
 
-		if (makeSphere) {
-			//FActorSpawnParameters SpawnParams;
-			for (int i = 0; i < 5; i++){
-				//SpawnedActorRef = 
-				GetWorld()->SpawnActor<AEnergySphere>(energySphere, myActor->GetActorLocation(), myActor->GetActorRotation());
+				}
+
+				makeSphere = false;
 
 			}
-
-			makeSphere = false;
-
-		}
+		
  	}
 
 }
