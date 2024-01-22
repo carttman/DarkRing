@@ -43,8 +43,8 @@ AEnergySphere::AEnergySphere()
 void AEnergySphere::BeginPlay()
 {
 	Super::BeginPlay();
-	randAngle = FMath::RandRange(-2000, 2000);
-	UKismetSystemLibrary::K2_SetTimer(this, TEXT("AutoDestroy"), 2, false);
+	randAngle = FMath::RandRange(1.5f, 2.5f);
+	UKismetSystemLibrary::K2_SetTimer(this, TEXT("AutoDestroy"), 5, false);
 }
 
 // Called every frame
@@ -52,18 +52,19 @@ void AEnergySphere::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
+//  	playerPos = player->GetActorLocation();
+//  	bossPos = boss->GetActorLocation();
 
+	//UE_LOG(LogTemp, Warning, TEXT("%f"), randAngle);
 	FVector dir = player->GetActorLocation() - GetActorLocation();
-	FVector p = GetActorLocation() + dir * DeltaTime * 300;
-	//SetActorLocation(p);
+	FVector p = GetActorLocation() + dir * DeltaTime * randAngle;
+	SetActorLocation(p);
 
 
 
 
 
 
-// 	playerPos = target->GetActorLocation();
-// 	bossPos = myActor->GetActorLocation();
 // 
 //  	FVector dir = playerPos - bossPos;
 // 	FVector p = bossPos + dir.Normalize() * DeltaTime * 300;

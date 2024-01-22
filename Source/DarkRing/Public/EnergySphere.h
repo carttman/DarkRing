@@ -38,7 +38,7 @@ public:
 	class ADarkSoules_Boss_Fight* boss;
 
 	UPROPERTY(EditAnywhere)
-	int32 randAngle;
+	float randAngle;
 	UPROPERTY(EditAnywhere)
 	FVector playerPos;
 	UPROPERTY(EditAnywhere)
