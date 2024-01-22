@@ -224,7 +224,7 @@ void UBossFSM::UpdateDamaged()
 
 void UBossFSM::UpdateBomb()
 {
-/*
+
 if (IsWaitComplete(bombReadyTime)) {
 		//주위에 강한데미지
 
@@ -256,7 +256,7 @@ if (IsWaitComplete(bombReadyTime)) {
 
 		}
  	}
-*/	
+
 }
 
 void UBossFSM::UpdateDash()
