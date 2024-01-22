@@ -82,14 +82,14 @@ public:
 	UPROPERTY(EditAnywhere)
 	FVector originPos;
 
-	UPROPERTY(EditAnywhere, Category = "Spawning")
-	TSubclassOf<AActor> energySphere;
+	UPROPERTY(EditAnywhere)
+	TSubclassOf<class AEnergySphere> energySphere;
 
 	UPROPERTY(EditAnywhere)
 	bool makeSphere = true;
 
-	UPROPERTY(EditAnywhere)
-	AActor* SpawnedActorRef;
+// 	UPROPERTY(EditAnywhere)
+// 	AActor* SpawnedActorRef;
 
 public:
 	void ChangeState(EEnemyState s);
