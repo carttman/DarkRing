@@ -13,13 +13,13 @@
 // Sets default values
 ADarkSoules_Boss_Fight::ADarkSoules_Boss_Fight()
 {
- 	// Set this character to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
+	// Set this character to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
 
 	fsm = CreateDefaultSubobject<UBossFSM>(TEXT("FSM"));
 	GetCharacterMovement()->bOrientRotationToMovement = true;
 	GetCharacterMovement()->MaxWalkSpeed = maxTraceSpeed;
-	
+
 	ConstructorHelpers::FObjectFinder<USkeletalMesh> tempMesh(TEXT("/Script/Engine.SkeletalMesh'/Game/ParagonSevarog/Characters/Heroes/Sevarog/Skins/Tier_1_5/MaskedReaper/Mesh/Sevarog_MaskedReaper_GDC.Sevarog_MaskedReaper_GDC'"));
 	if (tempMesh.Succeeded()) {
 		USkeletalMeshComponent* mesh = GetMesh();
@@ -27,12 +27,13 @@ ADarkSoules_Boss_Fight::ADarkSoules_Boss_Fight()
 	}
 }
 
+
 // Called when the game starts or when spawned
 void ADarkSoules_Boss_Fight::BeginPlay()
 {
 	Super::BeginPlay();
 
-	
+	currHP = maxHP;
 	
 }
 
@@ -66,5 +67,10 @@ void ADarkSoules_Boss_Fight::SetupPlayerInputComponent(UInputComponent* PlayerIn
 {
 	Super::SetupPlayerInputComponent(PlayerInputComponent);
 
+}
+
+void ADarkSoules_Boss_Fight::DamageProcess(int32 damage)
+{
+	currHP -= damage;
 }
 

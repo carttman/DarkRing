@@ -40,6 +40,8 @@ public:
 	UPROPERTY(EditAnywhere)
 	float randAngle;
 	UPROPERTY(EditAnywhere)
+	float randDist;
+	UPROPERTY(EditAnywhere)
 	FVector playerPos;
 	UPROPERTY(EditAnywhere)
 	FVector bossPos;

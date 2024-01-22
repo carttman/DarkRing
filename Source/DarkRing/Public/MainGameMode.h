@@ -14,4 +14,20 @@ class DARKRING_API AMainGameMode : public AGameModeBase
 {
 	GENERATED_BODY()
 	
+public:
+	AMainGameMode();
+
+
+protected:
+	virtual void BeginPlay() override;
+
+
+
+public:
+	UPROPERTY(EditAnywhere)
+	TSubclassOf<class UHealthBarWidget> healthBarWidget;
+
+	UPROPERTY(EditAnywhere)
+	class UHealthBarWidget* healthBarUI;
+
 };
