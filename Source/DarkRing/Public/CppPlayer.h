@@ -68,6 +68,19 @@ public:
 	UPROPERTY(EditAnywhere)
 	class UInputAction* ia_Rolling;
 
+	//InputAction AbilityQ
+	UPROPERTY(EditAnywhere)
+	class UInputAction* ia_AbilityQ;
+	
+	//InputAction AbilityE
+	UPROPERTY(EditAnywhere)
+	class UInputAction* ia_AbilityE;
+
+	//InputAction AbilityR
+	UPROPERTY(EditAnywhere)
+	class UInputAction* ia_AbilityR;
+
+
 	//콤보 카운트와 콤보 타이밍 시간 변수
 	int32 comboCnt = 0;
 	float comboMinTime = 0.5f;
@@ -76,7 +89,7 @@ public:
 	bool isAttacking = false;
 
 	float nowRollingTime = 0;
-	//가능하면 애니메이션에서 직접 얻어오기
+	
 	float maxRollingTime = 0.5f;
 	
 	FVector rollingDir = FVector(0);
@@ -93,10 +106,18 @@ public:
 
 	UPROPERTY(EditAnywhere)
 	class UAnimMontage* RollingMontage;
+
+	UPROPERTY(EditAnywhere)
+	class UAnimMontage* AbilityQMontage;
+
+	UPROPERTY(EditAnywhere)
+	class UAnimMontage* AbilityEMontage;
+
+	UPROPERTY(EditAnywhere)
+	class UAnimMontage* AbilityRMontage;
 public:
 
 	void MoveAction(FVector2d keyboardInput);
-
 	void InputHorizontal(float value);
 	void InputVertical(float value);
 	
@@ -106,10 +127,15 @@ public:
 
 	void EnhancedAttck(const struct FInputActionValue& value);
 	void EnhancedRolling(const struct FInputActionValue& value);
+	void EnhancedAbilityQ(const struct FInputActionValue& value);
+	void EnhancedAbilityE(const struct FInputActionValue& value);
+	void EnhancedAbilityR(const struct FInputActionValue& value);
 
 	void UpdateCombo(float deltaTime);
-
 	void UpdateRolling(float deltaTime);
+	
+	
+
 
 	///-------------------------------------
 	

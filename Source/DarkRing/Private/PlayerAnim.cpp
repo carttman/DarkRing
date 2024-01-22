@@ -22,6 +22,30 @@ UPlayerAnim::UPlayerAnim()
 		// 선언한 RollingMontage 변수에 object 전달
 		RollingMontage = AMR.Object;
 	}
+
+	//AbilityQ 몽타주를 파일 읽어오자
+	static ConstructorHelpers::FObjectFinder<UAnimMontage> AMAQ(TEXT("/Script/Engine.AnimMontage'/Game/Animation/AM_AbilityQ.AM_AbilityQ'"));
+	if (AMAQ.Succeeded()) //가져오기 성공시 
+	{
+		// 선언한 AttackMontage 변수에 object 전달
+		AbilityQMontage = AMAQ.Object;
+	}
+
+	//AbilityE 몽타주를 파일 읽어오자
+	static ConstructorHelpers::FObjectFinder<UAnimMontage> AMAE(TEXT("/Script/Engine.AnimMontage'/Game/Animation/AM_AbilityE.AM_AbilityE'"));
+	if (AMAQ.Succeeded()) //가져오기 성공시 
+	{
+		// 선언한 AttackMontage 변수에 object 전달
+		AbilityEMontage = AMAE.Object;
+	}
+
+	//AbilityR 몽타주를 파일 읽어오자
+	static ConstructorHelpers::FObjectFinder<UAnimMontage> AMAR(TEXT("/Script/Engine.AnimMontage'/Game/Animation/AM_AbilityR.AM_AbilityR'"));
+	if (AMAR.Succeeded()) //가져오기 성공시 
+	{
+		// 선언한 AttackMontage 변수에 object 전달
+		AbilityRMontage = AMAR.Object;
+	}
 }
 
 void UPlayerAnim::NativeUpdateAnimation(float DeltaSeconds)
@@ -80,4 +104,30 @@ void UPlayerAnim::RollingDodgeMontage(FName sectionName)
 
 }
 
+void UPlayerAnim::SkillQMontage(FName sectionName)
+{
+	// 몽타주 실행(몽타주 파일 담은 변수, 플레이 시간)
+	Montage_Play(AbilityQMontage, 1.f);
+
+	// 몽타주 섹션 점프
+	Montage_JumpToSection(sectionName, AbilityQMontage);
+}
+
+void UPlayerAnim::SkillEMontage(FName sectionName)
+{
+	// 몽타주 실행(몽타주 파일 담은 변수, 플레이 시간)
+	Montage_Play(AbilityEMontage, 1.f);
+
+	// 몽타주 섹션 점프
+	Montage_JumpToSection(sectionName, AbilityEMontage);
+}
+
+void UPlayerAnim::SkillRMontage(FName sectionName)
+{
+	// 몽타주 실행(몽타주 파일 담은 변수, 플레이 시간)
+	Montage_Play(AbilityRMontage, 1.f);
+
+	// 몽타주 섹션 점프
+	Montage_JumpToSection(sectionName, AbilityRMontage);
+}
 
