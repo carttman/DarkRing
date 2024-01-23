@@ -52,27 +52,15 @@ void AEnergySphere::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
-//  	playerPos = player->GetActorLocation();
-//  	bossPos = boss->GetActorLocation();
-
 	//UE_LOG(LogTemp, Warning, TEXT("%f"), randAngle);
 	FVector dir = player->GetActorLocation() - GetActorLocation();
 	FVector p = GetActorLocation() + dir * DeltaTime * randAngle;
 	SetActorLocation(p);
 
 
-
-
-
-
-// 
-//  	FVector dir = playerPos - bossPos;
-// 	FVector p = bossPos + dir.Normalize() * DeltaTime * 300;
-// 	SetActorLocation(p);
-// 
 // 	FRotator rot = FRotator(0, randAngle, 0);
 // 	FVector randDir = UKismetMathLibrary::GetForwardVector(rot);
-	//float randDist = FMath::RandRange(100.0f, 1500.0f);
+	randDist = FMath::RandRange(100.0f, 1500.0f);
 	//FVector spawnPos = GetActorLocation() * randDir;
 	//SetActorLocation(FVector(randAngle,0,50));
 
