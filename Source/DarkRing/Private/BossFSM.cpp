@@ -7,6 +7,7 @@
 #include "DarkSoules_Boss_Fight.h"
 #include "../../../../../../../Source/Runtime/Engine/Classes/GameFramework/CharacterMovementComponent.h"
 #include "BossAnim2.h"
+#include "EnergySphere.h"
 
 // Sets default values for this component's properties
 UBossFSM::UBossFSM()
@@ -19,6 +20,11 @@ UBossFSM::UBossFSM()
 	if (tempMontage.Succeeded()) {
 		montage = tempMontage.Object;
 	}
+	ConstructorHelpers::FClassFinder<AEnergySphere> tempESphere(TEXT("/Script/Engine.Blueprint'/Game/KEJ/EJBluePrints/BP_Energy_Sphere.BP_Energy_Sphere_C'"));
+	if (tempESphere.Succeeded()) {
+		energySphere = tempESphere.Class;
+	}
+
 }
 
 
@@ -32,9 +38,12 @@ void UBossFSM::BeginPlay()
 
 	myActor = Cast<ADarkSoules_Boss_Fight>(GetOwner());
 	
+	
 	USkeletalMeshComponent* mesh = myActor->GetMesh();
 	UAnimInstance* animInstance = mesh->GetAnimInstance();
 	anim = Cast<UBossAnim2>(animInstance);
+
+	originPos = myActor->GetActorLocation();
 }
 
 
@@ -64,6 +73,9 @@ void UBossFSM::TickComponent(float DeltaTime, ELevelTick TickType, FActorCompone
 		break;
 	case EEnemyState::DASH:
 		UpdateDash();
+		break;
+	case EEnemyState::RETURN:
+		UpdateReturn();
 		break;
 
 	default:
@@ -101,6 +113,8 @@ void UBossFSM::ChangeState(EEnemyState s)
 	}
 		break;
 	case EEnemyState::BOMB:
+
+		makeSphere = true;
 		dashCurrTime = 0;
 		UE_LOG(LogTemp, Warning, TEXT("bomb"));
 		//attackCount = 0;
@@ -139,6 +153,13 @@ void UBossFSM::UpdateMove()
 	if (dist < attackRange) {
 		ChangeState(EEnemyState::ATTACK);
 	}
+	else if (dist > traceRange) {
+		ChangeState(EEnemyState::RETURN);
+	}
+	else
+	{
+		return;
+	}
 
 }
 
@@ -147,32 +168,46 @@ void UBossFSM::UpdateAttack()
 	//UE_LOG(LogTemp, Warning, TEXT("%f"), currTime);
 
 	dashCurrTime += GetWorld()->DeltaTimeSeconds;
-	
-	if (IsWaitComplete(attackDelayTime)) {
-		float dist = FVector::Distance(target->GetActorLocation(), myActor->GetActorLocation());
 
-		if (dist < attackRange) {
-			UE_LOG(LogTemp, Warning, TEXT("attack"));
-			//attackCount++;
-			currTime = 0;
 
-			if (dashCurrTime> dashDelayTime) {
+	float dist = FVector::Distance(target->GetActorLocation(), myActor->GetActorLocation());
+
+	if (dist < attackRange)
+	{
+		//attackCount++;
+
+		if (IsWaitComplete(attackDelayTime))
+		{
+			//UE_LOG(LogTemp, Warning, TEXT("attack"));
+
+
+			if (dashCurrTime > dashDelayTime)
+			{
 				UE_LOG(LogTemp, Warning, TEXT("run"));
 				ChangeState(EEnemyState::BOMB);
 			}
-
 		}
-// 		else if (dist < traceRange) {
-// 			ChangeState(EEnemyState::MOVE);
-// 		}
-// 		else {
-// 			//UE_LOG(LogTemp, Warning, TEXT("reIdle"));
-// 			ChangeState(EEnemyState::IDLE);
-// 		}
-
 	}
 
+	else if (dist < traceRange)
+	{
+		//dashCurrTime = 0;
+
+		ChangeState(EEnemyState::MOVE);
+	}
+	else
+	{
+		//dashCurrTime = 0;
+
+		//UE_LOG(LogTemp, Warning, TEXT("reIdle"));
+		ChangeState(EEnemyState::IDLE);
+	}
+
+
 }
+
+
+
 
 void UBossFSM::UPdateAttackDelay()
 {
@@ -189,7 +224,8 @@ void UBossFSM::UpdateDamaged()
 
 void UBossFSM::UpdateBomb()
 {
-	if (IsWaitComplete(bombReadyTime)) {
+
+if (IsWaitComplete(bombReadyTime)) {
 		//주위에 강한데미지
 
 		UE_LOG(LogTemp, Warning, TEXT("bomb ing"));
@@ -197,23 +233,43 @@ void UBossFSM::UpdateBomb()
 // 		currTime = 0;
 // 		if (IsWaitComplete(3)) {
  			ChangeState(EEnemyState::DASH);
+			//SpawnedActorRef->Destroy();
+
 //		}
  	}
  	else {
  		//모션 상태로 멈춰있음
-		UE_LOG(LogTemp, Warning, TEXT("ANIM"));
+		//UE_LOG(LogTemp, Warning, TEXT("ANIM"));
 
+		//UGameplayStatics::SpawnObject(energySphere,)
+
+			if (makeSphere) {
+				//FActorSpawnParameters SpawnParams;
+				for (int i = 0; i < 5; i++) {
+					//SpawnedActorRef = 
+					GetWorld()->SpawnActor<AEnergySphere>(energySphere, myActor->GetActorLocation(), myActor->GetActorRotation());
+
+				}
+
+				makeSphere = false;
+
+			}
+		
  	}
+
 }
 
 void UBossFSM::UpdateDash()
 {
 	//바로 Dash		
-		myActor->GetCharacterMovement()->MaxWalkSpeed = 3000;
+		myActor->GetCharacterMovement()->MaxWalkSpeed = 3500;
 
 		myActor->AddMovementInput(dashDir);
 
-		if (IsWaitComplete(1)) {
+		float dist = FVector::Distance(myActor->GetActorLocation(), target->GetActorLocation());
+		UE_LOG(LogTemp, Warning, TEXT("%f"), dist);
+
+		if (IsWaitComplete(1.5) || dist < 250) {
 			ChangeState(EEnemyState::IDLE);
 		}
 
@@ -228,5 +284,20 @@ bool UBossFSM::IsWaitComplete(float delay)
 	}
 	return false;
 
+}
+
+void UBossFSM::UpdateReturn()
+{
+
+	FVector dir = originPos - myActor->GetActorLocation();
+
+	myActor->AddMovementInput(dir);
+
+	float dist = FVector::Distance(originPos, myActor->GetActorLocation());
+	UE_LOG(LogTemp, Warning, TEXT("%f"), dist);
+	if (dist < 50) {
+
+		ChangeState(EEnemyState::IDLE);
+	}
 }
 

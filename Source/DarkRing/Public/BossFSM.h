@@ -15,7 +15,8 @@ enum class EEnemyState : uint8
 	ATTACK_DELAY,
 	DAMAGE,
 	BOMB,
-	DASH
+	DASH,
+	RETURN
 };
 
 UENUM(BlueprintType)
@@ -54,9 +55,9 @@ public:
 	class UAnimMontage* montage;
 
 	UPROPERTY(EditAnywhere)
-	float traceRange = 1000;
+	float traceRange = 700;
 	UPROPERTY(EditAnywhere)
-	float attackRange = 200;
+	float attackRange = 150;
 
 	UPROPERTY(EditAnywhere)
 	float currTime = 0;
@@ -69,7 +70,7 @@ public:
 
 	UPROPERTY(EditAnywhere)
 	float dashCurrTime = 0;
-	float dashDelayTime = 3;
+	float dashDelayTime = 3;   //이거 7로 바꾸기
 
 	//플레이어 도망갈 시간
 	UPROPERTY(EditAnywhere)
@@ -77,6 +78,18 @@ public:
 
 	UPROPERTY(EditAnywhere)
 	FVector dashDir;
+
+	UPROPERTY(EditAnywhere)
+	FVector originPos;
+
+	UPROPERTY(EditAnywhere)
+	TSubclassOf<class AEnergySphere> energySphere;
+
+	UPROPERTY(EditAnywhere)
+	bool makeSphere = true;
+
+// 	UPROPERTY(EditAnywhere)
+// 	AActor* SpawnedActorRef;
 
 public:
 	void ChangeState(EEnemyState s);
@@ -91,6 +104,8 @@ public:
 	void UpdateDash();
 
 	bool IsWaitComplete(float delay);
+
+	void UpdateReturn();
 
 
 };

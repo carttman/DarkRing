@@ -36,7 +36,16 @@ public:
 	float maxTraceSpeed = 300;
 	float dashDelayTime = 3;
 	float currTime = 0;
+
+	UPROPERTY(EditAnywhere)
+	int32 currHP = 0;
+	int32 maxHP = 10;
+
 public:
 	UPROPERTY(EditAnywhere)
 	class UBossFSM* fsm;	
+
+
+	UFUNCTION()
+	void DamageProcess(int32 damage);
 };
