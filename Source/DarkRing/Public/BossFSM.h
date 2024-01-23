@@ -106,6 +106,7 @@ public:
 	bool IsWaitComplete(float delay);
 
 	void UpdateReturn();
+	void Looking();
 
 
 };
