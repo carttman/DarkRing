@@ -36,6 +36,16 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Rolling)
 	UAnimMontage* RollingMontage;
 
+	//Q 스킬 변수 선언
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = AbilityQ)
+	UAnimMontage* AbilityQMontage;
+	//E 스킬 변수 선언
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = AbilityE)
+	UAnimMontage* AbilityEMontage;
+	//R 스킬 변수 선언
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = AbilityR)
+	UAnimMontage* AbilityRMontage;
+
 public:
 	
 
@@ -49,4 +59,7 @@ public:
 	//구르기 몽타주 함수 선언
 	void RollingDodgeMontage(FName sectionName);
 
+	void SkillQMontage(FName sectionName);
+	void SkillEMontage(FName sectionName);
+	void SkillRMontage(FName sectionName);
 };

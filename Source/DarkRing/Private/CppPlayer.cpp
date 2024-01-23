@@ -65,6 +65,27 @@ ACppPlayer::ACppPlayer()
 		ia_Rolling = tempIARolling.Object;
 	}
 
+	// ia_AbilityQ 파일 읽어오자
+	ConstructorHelpers::FObjectFinder<UInputAction> tempIAAbilityQ(TEXT("/Script/EnhancedInput.InputAction'/Game/Input/IA_AbilityQ.IA_AbilityQ'"));
+	if (tempIAAbilityQ.Succeeded())
+	{
+		ia_AbilityQ = tempIAAbilityQ.Object;
+	}
+
+	// ia_AbilityE 파일 읽어오자
+	ConstructorHelpers::FObjectFinder<UInputAction> tempIAAbilityE(TEXT("/Script/EnhancedInput.InputAction'/Game/Input/IA_AbilityE.IA_AbilityE'"));
+	if (tempIAAbilityE.Succeeded())
+	{
+		ia_AbilityE = tempIAAbilityE.Object;
+	}
+
+	// ia_AbilityR 파일 읽어오자
+	ConstructorHelpers::FObjectFinder<UInputAction> tempIAAbilityR(TEXT("/Script/EnhancedInput.InputAction'/Game/Input/IA_AbilityR.IA_AbilityR'"));
+	if (tempIAAbilityR.Succeeded())
+	{
+		ia_AbilityR = tempIAAbilityR.Object;
+	}
+
 	//Skeletal Mesh 읽어오기
 	ConstructorHelpers::FObjectFinder<USkeletalMesh> tempMesh(TEXT("/Script/Engine.SkeletalMesh'/Game/ParagonAurora/Characters/Heroes/Aurora/Skins/GlacialEmpress/Meshes/Aurora_GlacialEmpress.Aurora_GlacialEmpress'"));
 
@@ -148,7 +169,6 @@ void ACppPlayer::BeginPlay()
 	// imc_Default를 추가하자
 	subSystem->AddMappingContext(imcDefault, 0);
 
-	
 }
 
 // Called every frame
@@ -181,6 +201,12 @@ void ACppPlayer::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent
 		input->BindAction(ia_Attack, ETriggerEvent::Triggered, this, &ACppPlayer::EnhancedAttck);
 
 		input->BindAction(ia_Rolling, ETriggerEvent::Triggered, this, &ACppPlayer::EnhancedRolling);
+
+		input->BindAction(ia_AbilityQ, ETriggerEvent::Triggered, this, &ACppPlayer::EnhancedAbilityQ);
+
+		input->BindAction(ia_AbilityE, ETriggerEvent::Triggered, this, &ACppPlayer::EnhancedAbilityE);
+
+		input->BindAction(ia_AbilityR, ETriggerEvent::Triggered, this, &ACppPlayer::EnhancedAbilityR);
 
 	}
 
@@ -402,6 +428,75 @@ void ACppPlayer::EnhancedRolling(const struct FInputActionValue& value)
 	}
 }
 
+void ACppPlayer::EnhancedAbilityQ(const struct FInputActionValue& value)
+{
+	
+
+	// 애니메이션을 플레이 하고있는가? 불 변수 선언
+	bool playAnimation = false;
+	// 섹션 점프를 하기위한 sectionName 선언
+	FName sectionName = TEXT("");
+
+	playAnimation = true;
+
+
+	// 나 애니메이션 플레이 해야 하니?
+	if (playAnimation == true)
+	{
+		// AnimInstance를 가져오기
+		auto AnimInstance = Cast<UPlayerAnim>(GetMesh()->GetAnimInstance());
+		// AnimInstance 값을 구르기Montage에 넣겠다
+		AnimInstance->SkillQMontage(sectionName);
+	}
+
+	UE_LOG(LogTemp, Warning, TEXT("Q스킬 발동"));
+}
+
+
+void ACppPlayer::EnhancedAbilityE(const struct FInputActionValue& value)
+{
+	// 만약 공중에 있는 상태라면 공격 못하도록 바로 리턴
+	if (GetCharacterMovement()->IsFalling()) return;
+
+	// 애니메이션을 플레이 하고있는가? 불 변수 선언
+	bool playAnimation = false;
+	// 섹션 점프를 하기위한 sectionName 선언
+	FName sectionName = TEXT("");
+
+	playAnimation = true;
+
+	// 나 애니메이션 플레이 해야 하니?
+	if (playAnimation == true)
+	{
+		// AnimInstance를 가져오기
+		auto AnimInstance = Cast<UPlayerAnim>(GetMesh()->GetAnimInstance());
+		// AnimInstance 값을 구르기Montage에 넣겠다
+		AnimInstance->SkillEMontage(sectionName);
+	}
+	UE_LOG(LogTemp, Warning, TEXT("E스킬 발동"));
+}
+
+void ACppPlayer::EnhancedAbilityR(const struct FInputActionValue& value)
+{
+	// 애니메이션을 플레이 하고있는가? 불 변수 선언
+	bool playAnimation = false;
+	// 섹션 점프를 하기위한 sectionName 선언
+	FName sectionName = TEXT("");
+
+	playAnimation = true;
+
+	// 나 애니메이션 플레이 해야 하니?
+	if (playAnimation == true)
+	{
+		// AnimInstance를 가져오기
+		auto AnimInstance = Cast<UPlayerAnim>(GetMesh()->GetAnimInstance());
+		// AnimInstance 값을 구르기Montage에 넣겠다
+		AnimInstance->SkillRMontage(sectionName);
+	}
+
+	UE_LOG(LogTemp, Warning, TEXT("R스킬 발동"));
+}
+
 void ACppPlayer::UpdateCombo(float deltaTime)
 {
 	// 콤보 카운트가 0보다 크면 (콤보 시작)
@@ -458,4 +553,6 @@ void ACppPlayer::UpdateRolling(float deltaTime)
 		GetCharacterMovement()->MaxWalkSpeed = moveSpeed;
 	}
 }
+
+
 
