@@ -8,6 +8,7 @@
 #include "../../../../../../../Source/Runtime/Engine/Classes/GameFramework/CharacterMovementComponent.h"
 #include "BossAnim2.h"
 #include "EnergySphere.h"
+#include <../../../../../../../Source/Runtime/Engine/Classes/Kismet/KismetMathLibrary.h>
 
 // Sets default values for this component's properties
 UBossFSM::UBossFSM()
@@ -174,6 +175,8 @@ void UBossFSM::UpdateAttack()
 
 	if (dist < attackRange)
 	{
+		Looking();
+		
 		//attackCount++;
 
 		if (IsWaitComplete(attackDelayTime))
@@ -243,10 +246,16 @@ if (IsWaitComplete(bombReadyTime)) {
 
 		//UGameplayStatics::SpawnObject(energySphere,)
 
+		Looking();
+
 			if (makeSphere) {
 				//FActorSpawnParameters SpawnParams;
+
+				//int32 degree = 10;
+
 				for (int i = 0; i < 5; i++) {
-					//SpawnedActorRef = 
+					
+		
 					GetWorld()->SpawnActor<AEnergySphere>(energySphere, myActor->GetActorLocation(), myActor->GetActorRotation());
 
 				}
@@ -270,7 +279,7 @@ void UBossFSM::UpdateDash()
 		UE_LOG(LogTemp, Warning, TEXT("%f"), dist);
 
 		if (IsWaitComplete(1.5) || dist < 250) {
-			ChangeState(EEnemyState::IDLE);
+			ChangeState(EEnemyState::MOVE);
 		}
 
 
@@ -299,5 +308,14 @@ void UBossFSM::UpdateReturn()
 
 		ChangeState(EEnemyState::IDLE);
 	}
+}
+
+void UBossFSM::Looking()
+{
+	FVector dir = target->GetActorLocation() - myActor->GetActorLocation();
+	FRotator rot = UKismetMathLibrary::MakeRotFromXZ(dir, myActor->GetActorUpVector());
+
+	myActor->SetActorRelativeRotation(rot);
+
 }
 
