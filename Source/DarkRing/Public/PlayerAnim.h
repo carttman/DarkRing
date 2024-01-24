@@ -46,6 +46,7 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = AbilityR)
 	UAnimMontage* AbilityRMontage;
 
+
 public:
 	
 
@@ -62,4 +63,10 @@ public:
 	void SkillQMontage(FName sectionName);
 	void SkillEMontage(FName sectionName);
 	void SkillRMontage(FName sectionName);
+
+public:
+	
+	// E 스킬 날라가는 얼음 Notify
+	UFUNCTION()
+	void AnimNotify_ThrowIce();
 };

@@ -80,6 +80,16 @@ public:
 	UPROPERTY(EditAnywhere)
 	class UInputAction* ia_AbilityR;
 
+	//
+	UPROPERTY(EditAnywhere)
+	class USkeletalMeshComponent* sword;
+
+	UPROPERTY(EditAnywhere)
+	TSubclassOf<class ASpawnEIce> IceFactory;
+
+	//spawn E Ice
+	UPROPERTY(EditAnywhere)
+	class AActor* spawnEIce;
 
 	//콤보 카운트와 콤보 타이밍 시간 변수
 	int32 comboCnt = 0;
@@ -89,9 +99,7 @@ public:
 	bool isAttacking = false;
 
 	float nowRollingTime = 0;
-	
 	float maxRollingTime = 0.5f;
-	
 	FVector rollingDir = FVector(0);
 	
 	// 구르기를 할 수 있는가?
@@ -100,6 +108,13 @@ public:
 	bool whileRolling = false;
 	//구르기 속도
 	float rollingSpeed = 1200;
+
+	
+	float skillEMinTime = 0;
+	float skillEMaxTime = 1.f;
+	float skillECurrTime = 0;
+
+	bool isCasting = false;
 
 	UPROPERTY(EditAnywhere)
 	class UAnimMontage* AttackMontage;
@@ -133,10 +148,9 @@ public:
 
 	void UpdateCombo(float deltaTime);
 	void UpdateRolling(float deltaTime);
-	
-	
+	void UpdateESkill();
 
-
+	
 	///-------------------------------------
 	
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
