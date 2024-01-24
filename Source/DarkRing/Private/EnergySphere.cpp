@@ -22,6 +22,7 @@ AEnergySphere::AEnergySphere()
 
 	compMesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("MESH"));
 	compMesh->SetupAttachment(RootComponent);
+	compMesh->SetCollisionProfileName(TEXT("NoCollision"));
 
 	ConstructorHelpers::FObjectFinder<UStaticMesh>tempMesh(TEXT("/Script/Engine.StaticMesh'/Game/StarterContent/Props/MaterialSphere.MaterialSphere'"));
 	if (tempMesh.Succeeded()) {
@@ -43,7 +44,7 @@ AEnergySphere::AEnergySphere()
 void AEnergySphere::BeginPlay()
 {
 	Super::BeginPlay();
-	randAngle = FMath::RandRange(1.5f, 2.5f);
+	randSpeed = FMath::RandRange(1.5f, 2.5f);
 	UKismetSystemLibrary::K2_SetTimer(this, TEXT("AutoDestroy"), 5, false);
 }
 
@@ -52,10 +53,14 @@ void AEnergySphere::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
-	//UE_LOG(LogTemp, Warning, TEXT("%f"), randAngle);
-	FVector dir = player->GetActorLocation() - GetActorLocation();
-	FVector p = GetActorLocation() + dir * DeltaTime * randAngle;
-	SetActorLocation(p);
+	if (player != nullptr) {
+
+		//UE_LOG(LogTemp, Warning, TEXT("%f"), randAngle);
+		FVector dir = player->GetActorLocation() - GetActorLocation();
+		FVector p = GetActorLocation() + dir * DeltaTime * randSpeed;
+		SetActorLocation(p);
+
+	}
 
 
 // 	FRotator rot = FRotator(0, randAngle, 0);

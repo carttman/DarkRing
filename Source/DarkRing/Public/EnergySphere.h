@@ -38,7 +38,7 @@ public:
 	class ADarkSoules_Boss_Fight* boss;
 
 	UPROPERTY(EditAnywhere)
-	float randAngle;
+	float randSpeed;
 	UPROPERTY(EditAnywhere)
 	float randDist;
 	UPROPERTY(EditAnywhere)
