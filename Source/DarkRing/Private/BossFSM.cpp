@@ -228,43 +228,43 @@ void UBossFSM::UpdateDamaged()
 void UBossFSM::UpdateBomb()
 {
 
-if (IsWaitComplete(bombReadyTime)) {
+	if (IsWaitComplete(bombReadyTime)) {
 		//주위에 강한데미지
 
-		UE_LOG(LogTemp, Warning, TEXT("bomb ing"));
+		//UE_LOG(LogTemp, Warning, TEXT("bomb ing"));
 
-// 		currTime = 0;
-// 		if (IsWaitComplete(3)) {
- 			ChangeState(EEnemyState::DASH);
-			//SpawnedActorRef->Destroy();
+		// 		currTime = 0;
+		// 		if (IsWaitComplete(3)) {
+		ChangeState(EEnemyState::DASH);
+		//SpawnedActorRef->Destroy();
 
 //		}
- 	}
- 	else {
- 		//모션 상태로 멈춰있음
+	}
+	else if (currTime > 1) {
+		//모션 상태로 멈춰있음
 		//UE_LOG(LogTemp, Warning, TEXT("ANIM"));
 
 		//UGameplayStatics::SpawnObject(energySphere,)
 
 		Looking();
 
-			if (makeSphere) {
-				//FActorSpawnParameters SpawnParams;
+		if (makeSphere) {
+			//FActorSpawnParameters SpawnParams;
+			//int32 degree = 10;
 
-				//int32 degree = 10;
 
-				for (int i = 0; i < 5; i++) {
-					
-		
-					GetWorld()->SpawnActor<AEnergySphere>(energySphere, myActor->GetActorLocation(), myActor->GetActorRotation());
+			for (int i = 0; i < 1; i++) {
 
-				}
 
-				makeSphere = false;
+				GetWorld()->SpawnActor<AEnergySphere>(energySphere, myActor->GetActorLocation(), myActor->GetActorRotation());
+
 
 			}
-		
- 	}
+			makeSphere = false;
+		}
+
+	}
+	else Looking();
 
 }
 

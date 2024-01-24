@@ -24,10 +24,5 @@ protected:
 
 
 public:
-	UPROPERTY(EditAnywhere)
-	TSubclassOf<class UHealthBarWidget> healthBarWidget;
-
-	UPROPERTY(EditAnywhere)
-	class UHealthBarWidget* healthBarUI;
 
 };
