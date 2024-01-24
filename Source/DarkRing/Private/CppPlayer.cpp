@@ -15,6 +15,7 @@
 #include "../../../../../../../Source/Runtime/Engine/Classes/Components/SceneComponent.h"
 #include "DarkSoules_Boss_Fight.h"
 #include "../../../../../../../Source/Runtime/Engine/Classes/Kismet/GameplayStatics.h"
+#include "SpawnEIce.h"
 
 
 // Sets default values
@@ -86,9 +87,14 @@ ACppPlayer::ACppPlayer()
 		ia_AbilityR = tempIAAbilityR.Object;
 	}
 
+	ConstructorHelpers::FClassFinder<ASpawnEIce> tempSEI(TEXT("/Script/Engine.Blueprint'/Game/Blueprint/BP_SpawnEIce.BP_SpawnEIce_C'"));
+	if (tempSEI.Succeeded())
+	{
+		IceFactory = tempSEI.Class; 
+	}
+
 	//Skeletal Mesh 읽어오기
 	ConstructorHelpers::FObjectFinder<USkeletalMesh> tempMesh(TEXT("/Script/Engine.SkeletalMesh'/Game/ParagonAurora/Characters/Heroes/Aurora/Skins/GlacialEmpress/Meshes/Aurora_GlacialEmpress.Aurora_GlacialEmpress'"));
-
 	//tempMesh를 잘 불러왔다면 
 	if (tempMesh.Succeeded())
 	{
@@ -96,7 +102,7 @@ ACppPlayer::ACppPlayer()
 		USkeletalMeshComponent* mesh = GetMesh();
 		mesh->SetSkeletalMesh(tempMesh.Object);
 	}
-
+	
 	// Mesh 의 위치 값과 회전값을 셋팅
 	GetMesh()->SetRelativeLocation(FVector(0, 0, -88));
 	GetMesh()->SetRelativeRotation(FRotator(0, -90, 0)); //pitch, yaw, roll
@@ -181,6 +187,14 @@ void ACppPlayer::Tick(float DeltaTime)
 	
 	//구르기
 	UpdateRolling(DeltaTime);
+
+	//skillECurrTime+= DeltaTime;
+	//if (skillECurrTime > 0.1)
+	//{
+	//	UpdateESkill();
+	//
+	//	skillECurrTime = 0;
+	//}
 }
 
 // Enhanced Input BindAction은 여기에
@@ -412,7 +426,6 @@ void ACppPlayer::EnhancedRolling(const struct FInputActionValue& value)
 		GetCharacterMovement()->SetJumpAllowed(false);
 		//공격 못하게 하자
 		
-
 		// 구르기 로그 출력
 		UE_LOG(LogTemp, Warning, TEXT("구르기"));
 
@@ -457,13 +470,21 @@ void ACppPlayer::EnhancedAbilityE(const struct FInputActionValue& value)
 {
 	// 만약 공중에 있는 상태라면 공격 못하도록 바로 리턴
 	if (GetCharacterMovement()->IsFalling()) return;
+	// 구르기 중이면 스킬 못쓰게
+	if (whileRolling) return;
+
 
 	// 애니메이션을 플레이 하고있는가? 불 변수 선언
 	bool playAnimation = false;
 	// 섹션 점프를 하기위한 sectionName 선언
 	FName sectionName = TEXT("");
-
+	
 	playAnimation = true;
+	sectionName = TEXT("EStart");
+	
+	
+	
+	//UpdateESkill();
 
 	// 나 애니메이션 플레이 해야 하니?
 	if (playAnimation == true)
@@ -554,5 +575,20 @@ void ACppPlayer::UpdateRolling(float deltaTime)
 	}
 }
 
+void ACppPlayer::UpdateESkill()
+{
+	
+
+	//FVector pos = GetMesh()->GetSocketLocation(TEXT("Sword_Base"));
+	//FVector pos = GetActorLocation();
+	FVector pos = GetActorLocation();
+	pos += FVector(0, 0, 0);
+	FRotator rot = GetActorRotation();
+	rot += FRotator(0, 0, 0);
+	//FRotator rot = GetMesh()->GetSocketRotation(TEXT("Sword_Base"));
+	GetWorld()->SpawnActor<ASpawnEIce>(IceFactory, pos, rot);
+
+	
+}
 
 

@@ -46,6 +46,12 @@ UPlayerAnim::UPlayerAnim()
 		// 선언한 AttackMontage 변수에 object 전달
 		AbilityRMontage = AMAR.Object;
 	}
+
+	//ConstructorHelpers::FClassFinder<ASpawnEIce> tempSEI(TEXT("/Script/Engine.Blueprint'/Game/BlueprintBP_SpawnEIce.BP_SpawnEIce_C'"));
+	//if (tempSEI.Succeeded())
+	//{
+	//	IceFactory = tempSEI.Class;
+	//}
 }
 
 void UPlayerAnim::NativeUpdateAnimation(float DeltaSeconds)
@@ -129,5 +135,15 @@ void UPlayerAnim::SkillRMontage(FName sectionName)
 
 	// 몽타주 섹션 점프
 	Montage_JumpToSection(sectionName, AbilityRMontage);
+}
+
+void UPlayerAnim::AnimNotify_ThrowIce()
+{	
+	//1. cpp player 캐스팅하자
+	APawn* player = TryGetPawnOwner();
+	ACppPlayer* myPlayer = Cast<ACppPlayer>(player);
+
+	// cpp player에 있는 E스킬 함수 가져와
+	myPlayer->UpdateESkill();
 }
 

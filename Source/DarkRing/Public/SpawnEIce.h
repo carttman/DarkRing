@@ -24,9 +24,19 @@ public:
 	virtual void Tick(float DeltaTime) override;
 
 public:
-	UPROPERTY(EditAnywhere)
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	class UBoxComponent* HitArea;
 
 	UPROPERTY(EditAnywhere)
 	class UParticleSystemComponent* ThrowIce;
+
+	UPROPERTY(EditAnywhere)
+	class UProjectileMovementComponent* comProjectile;
+
+	float currTime = 0;
+
+public:
+	UFUNCTION()
+	void AutoDestroy();
+
 };
