@@ -17,7 +17,7 @@ ASpawnEIce::ASpawnEIce()
 	HitArea = CreateDefaultSubobject<UBoxComponent>(TEXT("HitArea"));
 	SetRootComponent(HitArea);
 	HitArea->SetCollisionProfileName("OverlapOnlyPawn");
-	HitArea->SetRelativeScale3D(FVector(1.7, 1.0, 0.7));
+	HitArea->SetRelativeScale3D(FVector(2, 2, 2));
 	//(X = 1.700000, Y = 1.000000, Z = 0.700000)
 	HitArea->SetRelativeLocation(FVector(30, 0, 0));
 	
@@ -26,7 +26,7 @@ ASpawnEIce::ASpawnEIce()
 	ThrowIce = CreateDefaultSubobject<UParticleSystemComponent>(TEXT("ThrowIce"));
 	//ThrowIce를 HitArea 의 자식으로 셋팅
 	//ThrowIce->SetupAttachment(HitArea);
-	ThrowIce->SetRelativeRotation(FRotator(-60, 0, 0));
+	ThrowIce->SetRelativeRotation(FRotator(0, 0, 0));
 	ThrowIce->SetRelativeScale3D(FVector(0.5, 0.5, 0.5));
 	ThrowIce->SetRelativeLocation(FVector(0, 0, -30));
 	ThrowIce->SetupAttachment(HitArea);
@@ -43,7 +43,7 @@ void ASpawnEIce::BeginPlay()
 {
 	Super::BeginPlay();
 
-	SetLifeSpan(10);
+	SetLifeSpan(3);
 }
 
 // Called every frame
