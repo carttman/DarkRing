@@ -16,6 +16,7 @@
 #include "DarkSoules_Boss_Fight.h"
 #include "../../../../../../../Source/Runtime/Engine/Classes/Kismet/GameplayStatics.h"
 #include "SpawnEIce.h"
+#include "SpawnSwordAura.h"
 
 
 // Sets default values
@@ -87,10 +88,17 @@ ACppPlayer::ACppPlayer()
 		ia_AbilityR = tempIAAbilityR.Object;
 	}
 
+	//E스킬 얼음뭉치 액터 클래스 읽어와
 	ConstructorHelpers::FClassFinder<ASpawnEIce> tempSEI(TEXT("/Script/Engine.Blueprint'/Game/Blueprint/BP_SpawnEIce.BP_SpawnEIce_C'"));
 	if (tempSEI.Succeeded())
 	{
 		IceFactory = tempSEI.Class; 
+	}
+	// 궁극기 검기 액터 클래스 읽어와
+	ConstructorHelpers::FClassFinder<ASpawnSwordAura> tempSSA(TEXT("/Script/Engine.Blueprint'/Game/Blueprint/BP_SpawnSwordAura.BP_SpawnSwordAura_C'"));
+	if (tempSSA.Succeeded())
+	{
+		ultSwordFactory = tempSSA.Class;
 	}
 
 	//Skeletal Mesh 읽어오기
@@ -187,6 +195,9 @@ void ACppPlayer::Tick(float DeltaTime)
 	
 	//구르기
 	UpdateRolling(DeltaTime);
+
+	//궁극기 버프시간
+	UpdateUlt(DeltaTime);
 
 	//skillECurrTime+= DeltaTime;
 	//if (skillECurrTime > 0.1)
@@ -324,7 +335,18 @@ void ACppPlayer::EnhancedAttck(const struct FInputActionValue& value)
 		//공격 몽타주 섹션 실행
 		playAnimation = true;
 		sectionName = TEXT("Attack1");
-
+		// 만약 궁 사용중이면
+		if (isUltimaiting == true)
+		{
+			// 여기에 스폰 액터로 검기 소환 노티파이 
+			FVector pos = GetActorLocation();
+			pos += FVector(0, 0, 0);
+			FRotator rot = GetActorRotation();
+			rot += FRotator(0, 0, 0);
+			//FRotator rot = GetMesh()->GetSocketRotation(TEXT("Sword_Base"));
+			GetWorld()->SpawnActor<ASpawnSwordAura>(ultSwordFactory, pos, rot);
+			UE_LOG(LogTemp, Warning, TEXT("검기공격!"));
+		}
 		//플레이어 이동 정지
 		GetCharacterMovement()->SetMovementMode(MOVE_None);
 		//공격하고 있을 때 점프 막자
@@ -351,6 +373,18 @@ void ACppPlayer::EnhancedAttck(const struct FInputActionValue& value)
 			playAnimation = true;
 			sectionName = TEXT("Attack2");
 
+			if (isUltimaiting == true)
+			{
+				// 여기에 스폰 액터로 검기 소환 노티파이
+				FVector pos = GetActorLocation();
+				pos += FVector(0, 0, 0);
+				FRotator rot = GetActorRotation();
+				rot += FRotator(0, 0, 0);
+				//FRotator rot = GetMesh()->GetSocketRotation(TEXT("Sword_Base"));
+				GetWorld()->SpawnActor<ASpawnSwordAura>(ultSwordFactory, pos, rot);
+				UE_LOG(LogTemp, Warning, TEXT("검기공격!"));
+			}
+
 			//플레이어 이동 정지
 			GetCharacterMovement()->SetMovementMode(MOVE_None);
 
@@ -375,6 +409,18 @@ void ACppPlayer::EnhancedAttck(const struct FInputActionValue& value)
 
 			playAnimation = true;
 			sectionName = TEXT("Attack3");
+
+			if (isUltimaiting == true)
+			{
+				// 여기에 스폰 액터로 검기 소환 노티파이
+				FVector pos = GetActorLocation();
+				pos += FVector(0, 0, 0);
+				FRotator rot = GetActorRotation();
+				rot += FRotator(0, 0, 0);
+				//FRotator rot = GetMesh()->GetSocketRotation(TEXT("Sword_Base"));
+				GetWorld()->SpawnActor<ASpawnSwordAura>(ultSwordFactory, pos, rot);
+				UE_LOG(LogTemp, Warning, TEXT("검기공격!"));
+			}
 
 			//플레이어 이동 정지
 			GetCharacterMovement()->SetMovementMode(MOVE_None);
@@ -465,7 +511,6 @@ void ACppPlayer::EnhancedAbilityQ(const struct FInputActionValue& value)
 	UE_LOG(LogTemp, Warning, TEXT("Q스킬 발동"));
 }
 
-
 void ACppPlayer::EnhancedAbilityE(const struct FInputActionValue& value)
 {
 	// 만약 공중에 있는 상태라면 공격 못하도록 바로 리턴
@@ -508,11 +553,17 @@ void ACppPlayer::EnhancedAbilityR(const struct FInputActionValue& value)
 	// 섹션 점프를 하기위한 sectionName 선언
 	FName sectionName = TEXT("");
 
+	// 궁 버프 켜
+	isUltimaiting = true;
+
 	playAnimation = true;
 	sectionName = TEXT("Default");
+	
+	//점프 높이 올리고 점프해라
 	GetCharacterMovement()->JumpZVelocity = 1100;
 	GetCharacterMovement()->DoJump(true);
 	//GetCharacterMovement()->DoJump(true);
+	
 	// 나 애니메이션 플레이 해야 하니?
 	if (playAnimation == true)
 	{
@@ -521,7 +572,9 @@ void ACppPlayer::EnhancedAbilityR(const struct FInputActionValue& value)
 		// AnimInstance 값을 구르기Montage에 넣겠다
 		AnimInstance->SkillRMontage(sectionName);
 	}
+
 	UE_LOG(LogTemp, Warning, TEXT("R스킬 발동"));
+	//점프 다시 원상복귀
 	GetCharacterMovement()->JumpZVelocity = 800;
 }
 
@@ -598,4 +651,30 @@ void ACppPlayer::UpdateESkill()
 	
 }
 
+//궁극기 버프시간
+void ACppPlayer::UpdateUlt(float deltaTime)
+{	
+	// 만약 궁극기를 사용중이면
+	if (isUltimaiting == true)
+	{
+		//궁극기 현재시간에 델타타임을 더한다
+		currUltTime += deltaTime;
+
+		isthrowUlt = true;
+
+		// 만약 궁극기 지속시간이 끝났다면
+		if (currUltTime >= maxUltTime)
+		{	
+			// 궁극기를 꺼라
+			isUltimaiting = false;
+			isthrowUlt = false;
+			UE_LOG(LogTemp, Warning, TEXT("궁극기 꺼짐"));
+
+			//궁극기 현재시간 초기화
+			currUltTime = 0;
+
+		}
+
+	}
+}
 

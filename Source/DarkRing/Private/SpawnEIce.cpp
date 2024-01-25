@@ -3,7 +3,6 @@
 
 #include "SpawnEIce.h"
 #include <../../../../../../../Source/Runtime/Engine/Classes/Components/BoxComponent.h>
-
 #include <../../../../../../../Source/Runtime/Engine/Classes/Particles/ParticleSystemComponent.h>
 #include <../../../../../../../Source/Runtime/Engine/Classes/GameFramework/ProjectileMovementComponent.h>
 
