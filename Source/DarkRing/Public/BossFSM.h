@@ -82,11 +82,16 @@ public:
 	UPROPERTY(EditAnywhere)
 	FVector originPos;
 
+
 	UPROPERTY(EditAnywhere)
 	TSubclassOf<class AEnergySphere> energySphere;
 
 	UPROPERTY(EditAnywhere)
 	bool makeSphere = true;
+
+	UPROPERTY(EditAnywhere)
+	int32 sphereCnt = 100;
+
 
 // 	UPROPERTY(EditAnywhere)
 // 	AActor* SpawnedActorRef;
@@ -107,6 +112,9 @@ public:
 
 	void UpdateReturn();
 	void Looking();
+
+	UFUNCTION()
+	void SphereFactory();
 
 
 };
