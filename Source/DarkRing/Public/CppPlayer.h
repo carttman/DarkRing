@@ -87,6 +87,9 @@ public:
 	UPROPERTY(EditAnywhere)
 	TSubclassOf<class ASpawnEIce> IceFactory;
 
+	UPROPERTY(EditAnywhere)
+	TSubclassOf<class ASpawnSwordAura> ultSwordFactory;
+
 	//spawn E Ice
 	UPROPERTY(EditAnywhere)
 	class AActor* spawnEIce;
@@ -113,6 +116,16 @@ public:
 	float skillEMinTime = 0;
 	float skillEMaxTime = 1.f;
 	float skillECurrTime = 0;
+
+	//±Ã±Ø±â »ç¿ë ÁßÀÎ°¡?
+	bool isUltimaiting = false;
+	//±Ã °Ë±â ´øÁ®
+	bool isthrowUlt = false;
+	//±Ã±Ø ¹öÇÁ Áö¼Ó½Ã°£
+	float currUltTime = 0;
+	float minUltTime = 0;
+	float maxUltTime = 20;
+
 
 	bool isCasting = false;
 
@@ -150,6 +163,7 @@ public:
 	void UpdateRolling(float deltaTime);
 	void UpdateESkill();
 
+	void UpdateUlt(float deltaTime);
 	
 	///-------------------------------------
 	
