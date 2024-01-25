@@ -46,6 +46,12 @@ void AEnergySphere::BeginPlay()
 	Super::BeginPlay();
 	randSpeed = FMath::RandRange(1.5f, 2.5f);
 	UKismetSystemLibrary::K2_SetTimer(this, TEXT("AutoDestroy"), 5, false);
+
+
+
+
+
+
 }
 
 // Called every frame
@@ -56,8 +62,10 @@ void AEnergySphere::Tick(float DeltaTime)
 	if (player != nullptr) {
 
 		//UE_LOG(LogTemp, Warning, TEXT("%f"), randAngle);
-		FVector dir = player->GetActorLocation() - GetActorLocation();
-		FVector p = GetActorLocation() + dir * DeltaTime * randSpeed;
+		//FVector dir = player->GetActorLocation() - GetActorLocation();
+		
+		FVector p = GetActorLocation() + ( - GetActorForwardVector()) * DeltaTime * 300;
+	
 		SetActorLocation(p);
 
 	}

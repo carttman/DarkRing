@@ -45,6 +45,10 @@ void UBossFSM::BeginPlay()
 	anim = Cast<UBossAnim2>(animInstance);
 
 	originPos = myActor->GetActorLocation();
+
+
+
+
 }
 
 
@@ -66,6 +70,9 @@ void UBossFSM::TickComponent(float DeltaTime, ELevelTick TickType, FActorCompone
 		break;
 	case EEnemyState::ATTACK:
 		UpdateAttack();
+		break;
+	case EEnemyState::ATTACK_DELAY:
+		UPdateAttackDelay();
 		break;
 	case EEnemyState::DAMAGE:
 		UpdateDamaged();
@@ -112,6 +119,8 @@ void UBossFSM::ChangeState(EEnemyState s)
 		FString sectionName = FString::Printf(TEXT("Damage0%d"), rand);
 		myActor->PlayAnimMontage(montage, 1.0f, FName(sectionName));
 	}
+		break;
+	case EEnemyState::ATTACK_DELAY:
 		break;
 	case EEnemyState::BOMB:
 
@@ -214,6 +223,10 @@ void UBossFSM::UpdateAttack()
 
 void UBossFSM::UPdateAttackDelay()
 {
+	if (IsWaitComplete(3)) {
+		ChangeState(EEnemyState::MOVE);
+
+	}
 
 }
 
@@ -252,12 +265,7 @@ void UBossFSM::UpdateBomb()
 			//FActorSpawnParameters SpawnParams;
 			//int32 degree = 10;
 
-
-			for (int i = 0; i < 5; i++) {
-				
-				GetWorld()->SpawnActor<AEnergySphere>(energySphere, myActor->GetActorLocation(), myActor->GetActorRotation());
-			}
-			makeSphere = false;
+			SphereFactory();
 		}
 	}
 	else Looking();
@@ -275,7 +283,7 @@ void UBossFSM::UpdateDash()
 		UE_LOG(LogTemp, Warning, TEXT("%f"), dist);
 
 		if (IsWaitComplete(1.5) || dist < 250) {
-			ChangeState(EEnemyState::MOVE);
+			ChangeState(EEnemyState::ATTACK_DELAY);
 		}
 
 
@@ -312,6 +320,35 @@ void UBossFSM::Looking()
 	FRotator rot = UKismetMathLibrary::MakeRotFromXZ(dir, myActor->GetActorUpVector());
 
 	myActor->SetActorRelativeRotation(rot);
+
+}
+
+void UBossFSM::SphereFactory()
+{
+	FVector pos;
+	float halfValue = ((sphereCnt - 1) * 100) / 2.0f;
+
+	float roll = 0;
+	float angle = 360.0f / sphereCnt;
+
+
+	for (int32 i = 0; i < sphereCnt; i++) {
+
+		pos = myActor->GetActorLocation();
+
+		roll = i * angle;
+
+		//UKismetMathLibrary::MakeRotFromXZ(pos)
+
+		//FVector dir = (target->GetActorLocation() + target->GetActorRightVector() * i * 200) - myActor->GetActorLocation();
+
+		GetWorld()->SpawnActor<AEnergySphere>(energySphere, pos, FRotator(0,roll,0));
+
+		//myActor->GetActorLocation() + FVector(myActor->GetActorRightVector() * i * 100)
+
+	
+	}
+	makeSphere = false;
 
 }
 
