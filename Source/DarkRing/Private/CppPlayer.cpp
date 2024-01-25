@@ -499,13 +499,20 @@ void ACppPlayer::EnhancedAbilityE(const struct FInputActionValue& value)
 
 void ACppPlayer::EnhancedAbilityR(const struct FInputActionValue& value)
 {
+	// 만약 공중에 있는 상태라면 공격 못하도록 바로 리턴
+	if (GetCharacterMovement()->IsFalling()) return;
+	// 구르기 중이면 스킬 못쓰게
+	if (whileRolling) return;
 	// 애니메이션을 플레이 하고있는가? 불 변수 선언
 	bool playAnimation = false;
 	// 섹션 점프를 하기위한 sectionName 선언
 	FName sectionName = TEXT("");
 
 	playAnimation = true;
-
+	sectionName = TEXT("Default");
+	GetCharacterMovement()->JumpZVelocity = 1100;
+	GetCharacterMovement()->DoJump(true);
+	//GetCharacterMovement()->DoJump(true);
 	// 나 애니메이션 플레이 해야 하니?
 	if (playAnimation == true)
 	{
@@ -514,8 +521,8 @@ void ACppPlayer::EnhancedAbilityR(const struct FInputActionValue& value)
 		// AnimInstance 값을 구르기Montage에 넣겠다
 		AnimInstance->SkillRMontage(sectionName);
 	}
-
 	UE_LOG(LogTemp, Warning, TEXT("R스킬 발동"));
+	GetCharacterMovement()->JumpZVelocity = 800;
 }
 
 void ACppPlayer::UpdateCombo(float deltaTime)
