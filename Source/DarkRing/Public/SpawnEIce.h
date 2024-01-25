@@ -24,9 +24,11 @@ public:
 	virtual void Tick(float DeltaTime) override;
 
 public:
+	// 얼음 뭉치 맞는 판정
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	class UBoxComponent* HitArea;
-
+	
+	//얼음 뭉치를 던지는 구체의 파티클 
 	UPROPERTY(EditAnywhere)
 	class UParticleSystemComponent* ThrowIce;
 
