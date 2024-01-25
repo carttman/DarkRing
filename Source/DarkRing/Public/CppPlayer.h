@@ -90,6 +90,8 @@ public:
 	UPROPERTY(EditAnywhere)
 	TSubclassOf<class ASpawnSwordAura> ultSwordFactory;
 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	class UParticleSystemComponent* ultAura;
 	//spawn E Ice
 	UPROPERTY(EditAnywhere)
 	class AActor* spawnEIce;
@@ -119,15 +121,20 @@ public:
 
 	//±Ã±Ø±â »ç¿ë ÁßÀÎ°¡?
 	bool isUltimaiting = false;
+	//±Ã Ä³½ºÆÃ ÇÏ´Â Áß?
+	bool whileUlt = false;
 	//±Ã °Ë±â ´øÁ®
 	bool isthrowUlt = false;
+
+	bool isUltAuraOn = false;
 	//±Ã±Ø ¹öÇÁ Áö¼Ó½Ã°£
 	float currUltTime = 0;
 	float minUltTime = 0;
 	float maxUltTime = 20;
 
 
-	bool isCasting = false;
+
+	bool isCastingE = false;
 
 	UPROPERTY(EditAnywhere)
 	class UAnimMontage* AttackMontage;

@@ -17,6 +17,7 @@
 #include "../../../../../../../Source/Runtime/Engine/Classes/Kismet/GameplayStatics.h"
 #include "SpawnEIce.h"
 #include "SpawnSwordAura.h"
+#include <../../../../../../../Source/Runtime/Engine/Classes/Particles/ParticleSystemComponent.h>
 
 
 // Sets default values
@@ -144,6 +145,9 @@ ACppPlayer::ACppPlayer()
 
 	//bool hit = UKismetSystemLibrary::SphereTraceSingleForObjects(GetWorld(), sceneAttack->GetSocketLocation(), sceneAttack->GetSocketLocation(), 10.0f, TArray<EObjectTypeQuery::ObjectTypeQuery1>, )
 
+	// 플레이어 오라 컴포넌트 생성
+	ultAura = CreateDefaultSubobject<UParticleSystemComponent>(TEXT("UltAura"));
+	ultAura->SetupAttachment(GetMesh());
 }
 
 
@@ -183,6 +187,7 @@ void ACppPlayer::BeginPlay()
 	// imc_Default를 추가하자
 	subSystem->AddMappingContext(imcDefault, 0);
 
+	ultAura->Deactivate();
 }
 
 // Called every frame
@@ -314,7 +319,6 @@ void ACppPlayer::EnhancedAttck(const struct FInputActionValue& value)
 	if (GetCharacterMovement()->IsFalling()) return;
 	// 구르기 중이면 공격 못하게
 	if (whileRolling) return;
-	
 	// 만약 공격중이면 구르기 못하게
 	isRolling = false;
 
@@ -544,10 +548,11 @@ void ACppPlayer::EnhancedAbilityE(const struct FInputActionValue& value)
 
 void ACppPlayer::EnhancedAbilityR(const struct FInputActionValue& value)
 {
-	// 만약 공중에 있는 상태라면 공격 못하도록 바로 리턴
+	// 만약 공중에 있는 상태라면 못쓰게
 	if (GetCharacterMovement()->IsFalling()) return;
 	// 구르기 중이면 스킬 못쓰게
 	if (whileRolling) return;
+	if (whileUlt == true) return;
 	// 애니메이션을 플레이 하고있는가? 불 변수 선언
 	bool playAnimation = false;
 	// 섹션 점프를 하기위한 sectionName 선언
@@ -555,7 +560,7 @@ void ACppPlayer::EnhancedAbilityR(const struct FInputActionValue& value)
 
 	// 궁 버프 켜
 	isUltimaiting = true;
-
+	UE_LOG(LogTemp, Warning, TEXT("궁 켰다!"));
 	playAnimation = true;
 	sectionName = TEXT("Default");
 	
@@ -638,7 +643,6 @@ void ACppPlayer::UpdateRolling(float deltaTime)
 void ACppPlayer::UpdateESkill()
 {
 	
-
 	//FVector pos = GetMesh()->GetSocketLocation(TEXT("Sword_Base"));
 	//FVector pos = GetActorLocation();
 	FVector pos = GetActorLocation();
@@ -660,16 +664,31 @@ void ACppPlayer::UpdateUlt(float deltaTime)
 		//궁극기 현재시간에 델타타임을 더한다
 		currUltTime += deltaTime;
 
+		// 검기 소환 가능
 		isthrowUlt = true;
+		// 궁 캐스팅 하는 동안
+		whileUlt = true;
 
+		// 플레이어 오라 on
+		isUltAuraOn = true;
+		
+		if (isUltAuraOn == true)
+		{
+			// 파티클 이펙트 추가
+			ultAura->Activate();
+		}
 		// 만약 궁극기 지속시간이 끝났다면
 		if (currUltTime >= maxUltTime)
 		{	
 			// 궁극기를 꺼라
 			isUltimaiting = false;
 			isthrowUlt = false;
+			whileUlt = false;
+			// 플레이어 오라 off
+			isUltAuraOn = false;
 			UE_LOG(LogTemp, Warning, TEXT("궁극기 꺼짐"));
-
+			//플레이어 오라 off
+			ultAura->Deactivate();
 			//궁극기 현재시간 초기화
 			currUltTime = 0;
 
