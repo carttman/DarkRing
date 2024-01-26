@@ -39,7 +39,7 @@ ASpawnSwordAura::ASpawnSwordAura()
 void ASpawnSwordAura::BeginPlay()
 {
 	Super::BeginPlay();
-	
+	SetLifeSpan(1);
 }
 
 // Called every frame

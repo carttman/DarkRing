@@ -8,6 +8,7 @@
 #include "DarkSoules_Boss_Fight.h"
 #include <../../../../../../../Source/Runtime/Engine/Classes/Kismet/KismetMathLibrary.h>
 #include <../../../../../../../Source/Runtime/Engine/Classes/Particles/ParticleSystem.h>
+#include <../../../../../../../Source/Editor/Cascade/Classes/CascadeParticleSystemComponent.h>
 
 // Sets default values
 AEnergySphere::AEnergySphere()
@@ -33,6 +34,14 @@ AEnergySphere::AEnergySphere()
 	if (tempEffect.Succeeded()) {
 		bombEffect = tempEffect.Object;
 	}
+
+	fireEffect = CreateDefaultSubobject<UCascadeParticleSystemComponent>(TEXT("Fire"));
+	fireEffect->SetupAttachment(RootComponent);
+
+// 	ConstructorHelpers::FObjectFinder<UCascadeParticleSystemComponent> tempFire(TEXT("/Script/Engine.ParticleSystem'/Game/FXVarietyPack/Particles/P_ky_fireBall.P_ky_fireBall'"));
+// 	if (tempFire.Succeeded()) {
+// 		fireEffect = tempFire.Object;
+// 	}/Script/Engine.ParticleSystem'/Game/FXVarietyPack/Particles/P_ky_fireBall.P_ky_fireBall'
 	
 	AActor* findPlayer = UGameplayStatics::GetActorOfClass(GetWorld(), ACppPlayer::StaticClass());
 	player = Cast<ACppPlayer>(findPlayer);
@@ -46,6 +55,12 @@ void AEnergySphere::BeginPlay()
 	Super::BeginPlay();
 	randSpeed = FMath::RandRange(1.5f, 2.5f);
 	UKismetSystemLibrary::K2_SetTimer(this, TEXT("AutoDestroy"), 5, false);
+
+
+
+
+
+
 }
 
 // Called every frame
@@ -56,8 +71,10 @@ void AEnergySphere::Tick(float DeltaTime)
 	if (player != nullptr) {
 
 		//UE_LOG(LogTemp, Warning, TEXT("%f"), randAngle);
-		FVector dir = player->GetActorLocation() - GetActorLocation();
-		FVector p = GetActorLocation() + dir * DeltaTime * randSpeed;
+		//FVector dir = player->GetActorLocation() - GetActorLocation();
+		
+		FVector p = GetActorLocation() + ( - GetActorForwardVector()) * DeltaTime * 300;
+	
 		SetActorLocation(p);
 
 	}
