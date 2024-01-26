@@ -90,7 +90,7 @@ public:
 	bool makeSphere = true;
 
 	UPROPERTY(EditAnywhere)
-	int32 sphereCnt = 100;
+	int32 sphereCnt = 300;
 
 
 // 	UPROPERTY(EditAnywhere)
