@@ -8,6 +8,7 @@
 #include "DarkSoules_Boss_Fight.h"
 #include <../../../../../../../Source/Runtime/Engine/Classes/Kismet/KismetMathLibrary.h>
 #include <../../../../../../../Source/Runtime/Engine/Classes/Particles/ParticleSystem.h>
+#include <../../../../../../../Source/Editor/Cascade/Classes/CascadeParticleSystemComponent.h>
 
 // Sets default values
 AEnergySphere::AEnergySphere()
@@ -33,6 +34,14 @@ AEnergySphere::AEnergySphere()
 	if (tempEffect.Succeeded()) {
 		bombEffect = tempEffect.Object;
 	}
+
+	fireEffect = CreateDefaultSubobject<UCascadeParticleSystemComponent>(TEXT("Fire"));
+	fireEffect->SetupAttachment(RootComponent);
+
+// 	ConstructorHelpers::FObjectFinder<UCascadeParticleSystemComponent> tempFire(TEXT("/Script/Engine.ParticleSystem'/Game/FXVarietyPack/Particles/P_ky_fireBall.P_ky_fireBall'"));
+// 	if (tempFire.Succeeded()) {
+// 		fireEffect = tempFire.Object;
+// 	}/Script/Engine.ParticleSystem'/Game/FXVarietyPack/Particles/P_ky_fireBall.P_ky_fireBall'
 	
 	AActor* findPlayer = UGameplayStatics::GetActorOfClass(GetWorld(), ACppPlayer::StaticClass());
 	player = Cast<ACppPlayer>(findPlayer);
