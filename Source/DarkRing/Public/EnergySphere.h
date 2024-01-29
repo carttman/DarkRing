@@ -50,7 +50,7 @@ public:
 	class UParticleSystem* bombEffect;
 
 	UPROPERTY(EditAnywhere)
-	class UCascadeParticleSystemComponent* fireEffect;
+	class UParticleSystemComponent* fireEffect;
 
 	UFUNCTION()
 	void AutoDestroy();

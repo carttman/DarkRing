@@ -35,7 +35,7 @@ AEnergySphere::AEnergySphere()
 		bombEffect = tempEffect.Object;
 	}
 
-	fireEffect = CreateDefaultSubobject<UCascadeParticleSystemComponent>(TEXT("Fire"));
+	fireEffect = CreateDefaultSubobject<UParticleSystemComponent>(TEXT("Fire"));
 	fireEffect->SetupAttachment(RootComponent);
 
 // 	ConstructorHelpers::FObjectFinder<UCascadeParticleSystemComponent> tempFire(TEXT("/Script/Engine.ParticleSystem'/Game/FXVarietyPack/Particles/P_ky_fireBall.P_ky_fireBall'"));
