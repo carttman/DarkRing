@@ -62,6 +62,8 @@ public:
 	UPROPERTY(EditAnywhere)
 	float currTime = 0;
 	UPROPERTY(EditAnywhere)
+	float currTime2 = 1;
+	UPROPERTY(EditAnywhere)
 	float attackDelayTime = 1;
 	float damageDelayTime = 2;
 
@@ -87,7 +89,7 @@ public:
 	TSubclassOf<class AEnergySphere> energySphere;
 
 	UPROPERTY(EditAnywhere)
-	bool makeSphere = true;
+	int makeSphere = 0;
 
 	UPROPERTY(EditAnywhere)
 	int32 sphereCnt = 100;
@@ -109,6 +111,7 @@ public:
 	void UpdateDash();
 
 	bool IsWaitComplete(float delay);
+	bool IsWaitComplete2(float delay);
 
 	void UpdateReturn();
 	void Looking();

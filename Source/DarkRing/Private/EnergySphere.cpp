@@ -35,13 +35,7 @@ AEnergySphere::AEnergySphere()
 		bombEffect = tempEffect.Object;
 	}
 
-	fireEffect = CreateDefaultSubobject<UParticleSystemComponent>(TEXT("Fire"));
-	fireEffect->SetupAttachment(RootComponent);
 
-// 	ConstructorHelpers::FObjectFinder<UCascadeParticleSystemComponent> tempFire(TEXT("/Script/Engine.ParticleSystem'/Game/FXVarietyPack/Particles/P_ky_fireBall.P_ky_fireBall'"));
-// 	if (tempFire.Succeeded()) {
-// 		fireEffect = tempFire.Object;
-// 	}/Script/Engine.ParticleSystem'/Game/FXVarietyPack/Particles/P_ky_fireBall.P_ky_fireBall'
 	
 	AActor* findPlayer = UGameplayStatics::GetActorOfClass(GetWorld(), ACppPlayer::StaticClass());
 	player = Cast<ACppPlayer>(findPlayer);
