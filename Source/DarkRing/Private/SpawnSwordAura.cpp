@@ -15,7 +15,7 @@ ASpawnSwordAura::ASpawnSwordAura()
 	HitSword = CreateDefaultSubobject<UBoxComponent>(TEXT("HitSword"));
 	SetRootComponent(HitSword);
 	HitSword->SetCollisionProfileName("OverlapOnlyPawn");
-	HitSword->SetRelativeScale3D(FVector(1, 0.5, 0.3));
+	HitSword->SetRelativeScale3D(FVector(2, 2, 1));
 	//(X = 1.700000, Y = 1.000000, Z = 0.700000)
 	HitSword->SetRelativeLocation(FVector(30, 0, 0));
 
