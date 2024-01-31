@@ -27,7 +27,7 @@ ACppPlayer::ACppPlayer()
 	PrimaryActorTick.bCanEverTick = true;
 
 	// 애니메이션 블루프린드 파일 읽어와
-	static ConstructorHelpers::FClassFinder<UAnimInstance> tempAC(TEXT("/Script/Engine.AnimBlueprint'/Game/Animation/ABP_Player.ABP_Player_C'"));
+	ConstructorHelpers::FClassFinder<UAnimInstance> tempAC(TEXT("/Script/Engine.AnimBlueprint'/Game/Animation/ABP_Player.ABP_Player_C'"));
 	if (tempAC.Succeeded())
 	{
 		abpClass = tempAC.Class;
