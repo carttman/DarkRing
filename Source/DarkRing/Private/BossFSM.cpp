@@ -10,6 +10,7 @@
 #include "EnergySphere.h"
 #include <../../../../../../../Source/Runtime/Engine/Classes/Kismet/KismetMathLibrary.h>
 
+
 // Sets default values for this component's properties
 UBossFSM::UBossFSM()
 {
@@ -48,7 +49,6 @@ void UBossFSM::BeginPlay()
 
 
 
-
 }
 
 
@@ -56,6 +56,8 @@ void UBossFSM::BeginPlay()
 void UBossFSM::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)
 {
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
+
+	//UE_LOG(LogTemp, Warning, TEXT("currTime2 : %f, 2 : %f"), currTime, currTime2);
 
 
 	if (target == nullptr) return;
@@ -124,7 +126,7 @@ void UBossFSM::ChangeState(EEnemyState s)
 		break;
 	case EEnemyState::BOMB:
 
-		makeSphere = true;
+		makeSphere = 0;
 		dashCurrTime = 0;
 		UE_LOG(LogTemp, Warning, TEXT("bomb"));
 		//attackCount = 0;
@@ -261,12 +263,19 @@ void UBossFSM::UpdateBomb()
 
 		Looking();
 
-		if (makeSphere) {
-			//FActorSpawnParameters SpawnParams;
-			//int32 degree = 10;
+			if (makeSphere == 0) {
+				//FActorSpawnParameters SpawnParams;
+				//int32 degree = 10;
 
-			SphereFactory();
-		}
+				SphereFactory();
+				
+				UE_LOG(LogTemp, Warning, TEXT("i is"));
+		
+			}
+			else if(makeSphere == 1 && currTime > 2) SphereFactory();
+			else if(makeSphere == 2 && currTime > 3) SphereFactory();
+
+
 	}
 	else Looking();
 
@@ -280,7 +289,7 @@ void UBossFSM::UpdateDash()
 		myActor->AddMovementInput(dashDir);
 
 		float dist = FVector::Distance(myActor->GetActorLocation(), target->GetActorLocation());
-		UE_LOG(LogTemp, Warning, TEXT("%f"), dist);
+		//UE_LOG(LogTemp, Warning, TEXT("%f"), dist);
 
 		if (IsWaitComplete(1.5) || dist < 250) {
 			ChangeState(EEnemyState::ATTACK_DELAY);
@@ -298,19 +307,36 @@ bool UBossFSM::IsWaitComplete(float delay)
 	return false;
 
 }
+bool UBossFSM::IsWaitComplete2(float delay)
+{
+	currTime2 += GetWorld()->DeltaTimeSeconds;
+	if (currTime2 >= delay) {
+		return true;
+	}
+	return false;
+
+}
 
 void UBossFSM::UpdateReturn()
 {
 
 	FVector dir = originPos - myActor->GetActorLocation();
 
+	FVector distacnePtoB = myActor->GetActorLocation() - target->GetActorLocation();
+
 	myActor->AddMovementInput(dir);
 
-	float dist = FVector::Distance(originPos, myActor->GetActorLocation());
-	UE_LOG(LogTemp, Warning, TEXT("%f"), dist);
-	if (dist < 50) {
+	if (distacnePtoB.Length() < attackRange) ChangeState(EEnemyState::ATTACK);
+	else if(distacnePtoB.Length() < traceRange) ChangeState(EEnemyState::MOVE);
+	else {
 
-		ChangeState(EEnemyState::IDLE);
+		float dist = FVector::Distance(originPos, myActor->GetActorLocation());
+		//UE_LOG(LogTemp, Warning, TEXT("%f"), dist);
+		if (dist < 50) {
+
+			ChangeState(EEnemyState::IDLE);
+		}
+
 	}
 }
 
@@ -325,6 +351,9 @@ void UBossFSM::Looking()
 
 void UBossFSM::SphereFactory()
 {
+	float sphereAttackTime = FMath::RandRange(0.5f, 2.0f);
+
+
 	FVector pos;
 	float halfValue = ((sphereCnt - 1) * 100) / 2.0f;
 
@@ -332,23 +361,25 @@ void UBossFSM::SphereFactory()
 	float angle = 360.0f / sphereCnt;
 
 
-	for (int32 i = 0; i < sphereCnt; i++) {
 
-		pos = myActor->GetActorLocation();
+		for (int32 i = 0; i < sphereCnt; i++) {
+			
 
-		roll = i * angle;
+			pos = myActor->GetActorLocation();
 
-		//UKismetMathLibrary::MakeRotFromXZ(pos)
+			roll = i * angle;
 
-		//FVector dir = (target->GetActorLocation() + target->GetActorRightVector() * i * 200) - myActor->GetActorLocation();
+			//UKismetMathLibrary::MakeRotFromXZ(pos)
 
-		GetWorld()->SpawnActor<AEnergySphere>(energySphere, pos, FRotator(0,roll,0));
+			//FVector dir = (target->GetActorLocation() + target->GetActorRightVector() * i * 200) - myActor->GetActorLocation();
 
-		//myActor->GetActorLocation() + FVector(myActor->GetActorRightVector() * i * 100)
+			GetWorld()->SpawnActor<AEnergySphere>(energySphere, pos, FRotator(0, roll, 0));
 
-	
-	}
-	makeSphere = false;
+			//myActor->GetActorLocation() + FVector(myActor->GetActorRightVector() * i * 100)
+
+		}
+
+	makeSphere++;
 
 }
 

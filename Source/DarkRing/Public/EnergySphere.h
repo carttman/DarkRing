@@ -49,8 +49,6 @@ public:
 	UPROPERTY(EditAnywhere)
 	class UParticleSystem* bombEffect;
 
-	UPROPERTY(EditAnywhere)
-	class UParticleSystemComponent* fireEffect;
 
 	UFUNCTION()
 	void AutoDestroy();
