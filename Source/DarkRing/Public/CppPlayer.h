@@ -90,6 +90,9 @@ public:
 	UPROPERTY(EditAnywhere)
 	TSubclassOf<class ASpawnSwordAura> ultSwordFactory;
 
+	UPROPERTY(EditAnywhere)
+	TSubclassOf <class UAnimInstance> abpClass;
+
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	class UParticleSystemComponent* ultAura;
 	//spawn E Ice

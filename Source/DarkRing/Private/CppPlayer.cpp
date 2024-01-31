@@ -26,6 +26,13 @@ ACppPlayer::ACppPlayer()
  	// Set this character to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
 
+	// 애니메이션 블루프린드 파일 읽어와
+	static ConstructorHelpers::FClassFinder<UAnimInstance> tempAC(TEXT("/Script/Engine.AnimBlueprint'/Game/Animation/ABP_Player.ABP_Player_C'"));
+	if (tempAC.Succeeded())
+	{
+		abpClass = tempAC.Class;
+	}
+
 	// imc default 파일 읽어오자
 	ConstructorHelpers::FObjectFinder<UInputMappingContext> tempImc(TEXT("/Script/EnhancedInput.InputMappingContext'/Game/Input/IMC_Default.IMC_Default'"));
 	if (tempImc.Succeeded())
@@ -148,6 +155,10 @@ ACppPlayer::ACppPlayer()
 	// 플레이어 오라 컴포넌트 생성
 	ultAura = CreateDefaultSubobject<UParticleSystemComponent>(TEXT("UltAura"));
 	ultAura->SetupAttachment(GetMesh());
+
+	// 플레이어 애니메이션 블루프린트 클래스 지정
+	GetMesh()->SetAnimInstanceClass(abpClass);
+
 }
 
 
