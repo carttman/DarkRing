@@ -18,6 +18,7 @@
 #include "SpawnEIce.h"
 #include "SpawnSwordAura.h"
 #include <../../../../../../../Source/Runtime/Engine/Classes/Particles/ParticleSystemComponent.h>
+#include <../../../../../../../Source/Runtime/Engine/Classes/Components/CapsuleComponent.h>
 
 
 // Sets default values
@@ -479,14 +480,18 @@ void ACppPlayer::EnhancedRolling(const struct FInputActionValue& value)
 
 		//캐릭터 무브먼트를 구르는동안 롤링스피드로
 		GetCharacterMovement()->MaxWalkSpeed = rollingSpeed;
-
+		//CapsuleComponent->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 		playAnimation = true;
 		sectionName = TEXT("Rolling");
 		
+		//UCapsuleComponent* CapsuleComp = GetCapsuleComponent();
+		//CapsuleComp->SetCollisionEnabled(ECollisionEnabled::);
+
 		//점프 막자
 		GetCharacterMovement()->SetJumpAllowed(false);
 		//공격 못하게 하자
 		
+
 		// 구르기 로그 출력
 		UE_LOG(LogTemp, Warning, TEXT("구르기"));
 

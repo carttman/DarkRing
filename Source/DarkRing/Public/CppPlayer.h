@@ -95,6 +95,8 @@ public:
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	class UParticleSystemComponent* ultAura;
+
+
 	//spawn E Ice
 	UPROPERTY(EditAnywhere)
 	class AActor* spawnEIce;
@@ -113,6 +115,8 @@ public:
 	// 구르기를 할 수 있는가?
 	bool isRolling = false;
 	// 구르기 중인가??
+public:
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	bool whileRolling = false;
 	//구르기 속도
 	float rollingSpeed = 1200;
