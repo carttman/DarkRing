@@ -159,7 +159,7 @@ ACppPlayer::ACppPlayer()
 
 	// 플레이어 애니메이션 블루프린트 클래스 지정
 	GetMesh()->SetAnimInstanceClass(abpClass);
-
+	isRolling = true;
 }
 
 
