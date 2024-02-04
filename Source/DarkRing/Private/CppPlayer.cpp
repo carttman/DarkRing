@@ -136,7 +136,7 @@ ACppPlayer::ACppPlayer()
 	//springArm camera Collision 을 visibility 로 셋팅
 	springArm->ProbeChannel = ECollisionChannel::ECC_Visibility;
 	
-	springArm->TargetArmLength = 500;
+	springArm->TargetArmLength = 550;
 	//ECollisionChannel Channel = ECollisionChannel::ECC_Visibility;
 	//ECollisionChannel::ECC_Visibility;
 	//springColl = TEnumAsByte<ECollisionChannel>(TEXT("Visibility"));
@@ -159,7 +159,7 @@ ACppPlayer::ACppPlayer()
 
 	// 플레이어 애니메이션 블루프린트 클래스 지정
 	GetMesh()->SetAnimInstanceClass(abpClass);
-
+	isRolling = true;
 }
 
 
