@@ -31,9 +31,6 @@ public:
 public:
 	UPROPERTY(EditAnywhere)
 	class USpringArmComponent* springArm;
-	
-	// UPROPERTY(EditAnywhere)
-	// ECollisionChannel springColl = ECC_Visibility;
 
 	UPROPERTY(EditAnywhere)
 	class UCameraComponent* camera;
@@ -41,9 +38,11 @@ public:
 	// float h; , float v;
 	FVector moveInput = FVector(0);
 
+	// 이동속도
 	float moveSpeed = 500;
 
-
+public: // Enhanced input 변수들
+	
 	// Input Mapping Context 담을 변수
 	UPROPERTY(EditAnywhere)
 	class UInputMappingContext* imcDefault;
@@ -80,7 +79,8 @@ public:
 	UPROPERTY(EditAnywhere)
 	class UInputAction* ia_AbilityR;
 
-	//
+public: // 스킬들 생성 관련 액터와 애니메이션 클래스 
+	
 	UPROPERTY(EditAnywhere)
 	class USkeletalMeshComponent* sword;
 
@@ -95,7 +95,7 @@ public:
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	class UParticleSystemComponent* ultAura;
-	//spawn E Ice
+
 	UPROPERTY(EditAnywhere)
 	class AActor* spawnEIce;
 
@@ -106,13 +106,17 @@ public:
 	float comboCurrTime = 0;
 	bool isAttacking = false;
 
+	//현재 구르기 시간을 계산하는 변수와 구르기 거리 변수
 	float nowRollingTime = 0;
 	float maxRollingTime = 0.5f;
 	FVector rollingDir = FVector(0);
 	
 	// 구르기를 할 수 있는가?
 	bool isRolling = false;
-	// 구르기 중인가??
+	
+
+public:
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	bool whileRolling = false;
 	//구르기 속도
 	float rollingSpeed = 1200;
@@ -135,9 +139,25 @@ public:
 	float minUltTime = 0;
 	float maxUltTime = 20;
 
-
-
 	bool isCastingE = false;
+
+	// MP 관련 변수
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	float maxMP = 100;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	float currMP = 0;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	float minMP = 0;
+
+	// Stemina 관련 변수
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	float maxStemina = 100;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	float currStemina = 0;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	float minStemina = 0;
+
+public: // 몽타주 클래스들
 
 	UPROPERTY(EditAnywhere)
 	class UAnimMontage* AttackMontage;
@@ -153,6 +173,7 @@ public:
 
 	UPROPERTY(EditAnywhere)
 	class UAnimMontage* AbilityRMontage;
+
 public:
 
 	void MoveAction(FVector2d keyboardInput);
@@ -175,6 +196,9 @@ public:
 
 	void UpdateUlt(float deltaTime);
 	
+	void UpdateMP(float deltaTime);
+
+	void UpdateStemina(float deltaTime);
 	///-------------------------------------
 	
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)

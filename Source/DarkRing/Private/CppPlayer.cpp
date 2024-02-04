@@ -18,6 +18,7 @@
 #include "SpawnEIce.h"
 #include "SpawnSwordAura.h"
 #include <../../../../../../../Source/Runtime/Engine/Classes/Particles/ParticleSystemComponent.h>
+#include <../../../../../../../Source/Runtime/Engine/Classes/Components/CapsuleComponent.h>
 
 
 // Sets default values
@@ -199,6 +200,12 @@ void ACppPlayer::BeginPlay()
 	subSystem->AddMappingContext(imcDefault, 0);
 
 	ultAura->Deactivate();
+
+	//게임시작 시 현재 마나는 최대 마나와 같게
+	currMP = maxMP;
+
+	//게임시작 시 현재 Stemina는 최대 Stemina와 같게
+	currStemina = maxStemina;
 }
 
 // Called every frame
@@ -215,13 +222,11 @@ void ACppPlayer::Tick(float DeltaTime)
 	//궁극기 버프시간
 	UpdateUlt(DeltaTime);
 
-	//skillECurrTime+= DeltaTime;
-	//if (skillECurrTime > 0.1)
-	//{
-	//	UpdateESkill();
-	//
-	//	skillECurrTime = 0;
-	//}
+	// 마나 회복
+	UpdateMP(DeltaTime);
+	
+	// 스테미나 회복
+	UpdateStemina(DeltaTime);
 }
 
 // Enhanced Input BindAction은 여기에
@@ -326,6 +331,11 @@ void ACppPlayer::EnhancedMove(const FInputActionValue& value)
 
 void ACppPlayer::EnhancedAttck(const struct FInputActionValue& value)
 {
+	// 만약 현재Stemina가 최소 Stemina이거나 현재Stemina가 20보다 작으면 못쓰도록
+	if (currStemina == minStemina || currStemina < 10) return;
+	//Stemina 20 사용
+	currStemina -= 10;
+
 	// 만약 공중에 있는 상태라면 공격 못하도록 바로 리턴
 	if (GetCharacterMovement()->IsFalling()) return;
 	// 구르기 중이면 공격 못하게
@@ -459,7 +469,11 @@ void ACppPlayer::EnhancedAttck(const struct FInputActionValue& value)
 
 void ACppPlayer::EnhancedRolling(const struct FInputActionValue& value)
 {		
-	
+	// 만약 현재Stemina가 최소 Stemina이거나 현재Stemina가 20보다 작으면 못쓰도록
+	if (currStemina == minStemina || currStemina < 10) return;
+	//Stemina 20 사용
+	currStemina -= 10;
+
 	// 만약 공중에 있는 상태라면 공격 못하도록 바로 리턴
 	if (GetCharacterMovement()->IsFalling()) return;
 
@@ -479,14 +493,18 @@ void ACppPlayer::EnhancedRolling(const struct FInputActionValue& value)
 
 		//캐릭터 무브먼트를 구르는동안 롤링스피드로
 		GetCharacterMovement()->MaxWalkSpeed = rollingSpeed;
-
+		//CapsuleComponent->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 		playAnimation = true;
 		sectionName = TEXT("Rolling");
 		
+		//UCapsuleComponent* CapsuleComp = GetCapsuleComponent();
+		//CapsuleComp->SetCollisionEnabled(ECollisionEnabled::);
+
 		//점프 막자
 		GetCharacterMovement()->SetJumpAllowed(false);
 		//공격 못하게 하자
 		
+
 		// 구르기 로그 출력
 		UE_LOG(LogTemp, Warning, TEXT("구르기"));
 
@@ -528,8 +546,14 @@ void ACppPlayer::EnhancedAbilityQ(const struct FInputActionValue& value)
 
 void ACppPlayer::EnhancedAbilityE(const struct FInputActionValue& value)
 {
+	// 만약 현재마나가 최소 마나이거나 현재마나가 10보다 작으면 못쓰도록
+	if (currMP == minMP || currMP < 10) return;
+	//MP 30 사용
+	currMP -= 10;
+
 	// 만약 공중에 있는 상태라면 공격 못하도록 바로 리턴
 	if (GetCharacterMovement()->IsFalling()) return;
+
 	// 구르기 중이면 스킬 못쓰게
 	if (whileRolling) return;
 
@@ -542,9 +566,6 @@ void ACppPlayer::EnhancedAbilityE(const struct FInputActionValue& value)
 	playAnimation = true;
 	sectionName = TEXT("EStart");
 	
-	
-	
-	//UpdateESkill();
 
 	// 나 애니메이션 플레이 해야 하니?
 	if (playAnimation == true)
@@ -559,6 +580,11 @@ void ACppPlayer::EnhancedAbilityE(const struct FInputActionValue& value)
 
 void ACppPlayer::EnhancedAbilityR(const struct FInputActionValue& value)
 {
+	// 만약 현재마나가 최소 마나이거나 현재마나가 10보다 작으면 못쓰도록
+	if (currMP == minMP || currMP < 50) return;
+	//MP 50 사용
+	currMP -= 50;
+
 	// 만약 공중에 있는 상태라면 못쓰게
 	if (GetCharacterMovement()->IsFalling()) return;
 	// 구르기 중이면 스킬 못쓰게
@@ -620,6 +646,8 @@ void ACppPlayer::UpdateCombo(float deltaTime)
 
 void ACppPlayer::UpdateRolling(float deltaTime)
 {
+	
+
 	//만약 구르기 중이면
 	if (whileRolling)
 	{	
@@ -705,6 +733,53 @@ void ACppPlayer::UpdateUlt(float deltaTime)
 
 		}
 
+	}
+}
+
+void ACppPlayer::UpdateMP(float deltaTime)
+{
+	// 현재 마나가 최대 마나보다 적으면
+	if (currMP < maxMP)
+	{
+		// 현재 MP에 델타타임을 더한다 ( 자연 마나 회복 )
+		currMP += deltaTime * 2;
+
+	}
+	// 그렇지 않고 현재 마나가 maxMP와 같으면
+	else if (currMP == maxMP)
+	{
+		//델타타임 멈추기
+		
+	}
+	// 만약 현재마나가 최소마나보다 작으면
+	if (currMP < minMP)
+	{
+		// 현재마나는 최소 마나(0)와 같게
+		currMP = minMP;
+	}
+
+}
+
+void ACppPlayer::UpdateStemina(float deltaTime)
+{
+	// 현재 Stemina 가 최대 Stemina 보다 적으면
+	if (currStemina < maxStemina)
+	{
+		// 현재 Stemina 에 델타타임을 더한다 ( 자연 Stemina 회복 )
+		currStemina += deltaTime * 8;
+
+	}
+	// 그렇지 않고 현재 Stemina 가 maxStemina와 같으면
+	else if (currStemina == maxStemina)
+	{
+		//델타타임 멈추기
+
+	}
+	// 만약 현재Stemina가 최소Stemina보다 작으면
+	if (currStemina < minStemina)
+	{
+		// 현재Stemina는 최소 Stemina(0)와 같게
+		currStemina = minStemina;
 	}
 }
 
