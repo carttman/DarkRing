@@ -94,6 +94,9 @@ public:
 	UPROPERTY(EditAnywhere)
 	int32 sphereCnt = 100;
 
+	UPROPERTY(EditAnywhere)
+	float veryFar = 800;
+
 
 // 	UPROPERTY(EditAnywhere)
 // 	AActor* SpawnedActorRef;

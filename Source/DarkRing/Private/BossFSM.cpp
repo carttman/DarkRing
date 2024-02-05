@@ -107,6 +107,7 @@ void UBossFSM::ChangeState(EEnemyState s)
 	switch (currState)
 	{
 	case EEnemyState::IDLE:
+		myActor->GetCharacterMovement()->MaxWalkSpeed = 300;
 		break;
 	case EEnemyState::MOVE:
 		break;
@@ -123,6 +124,8 @@ void UBossFSM::ChangeState(EEnemyState s)
 	}
 		break;
 	case EEnemyState::ATTACK_DELAY:
+		target->GetCharacterMovement()->MaxWalkSpeed = 100;
+
 		break;
 	case EEnemyState::BOMB:
 
@@ -143,7 +146,7 @@ void UBossFSM::ChangeState(EEnemyState s)
 
 void UBossFSM::UpdateIdle()
 {
-	myActor->GetCharacterMovement()->MaxWalkSpeed = 300;
+
 
 	FVector dir = target->GetActorLocation() - myActor->GetActorLocation();
 	float dist = dir.Length();
@@ -285,13 +288,14 @@ void UBossFSM::UpdateDash()
 {
 	//¹Ù·Î Dash		
 		myActor->GetCharacterMovement()->MaxWalkSpeed = 3500;
+		target->GetCharacterMovement()->MaxWalkSpeed = 100;
 
 		myActor->AddMovementInput(dashDir);
 
 		float dist = FVector::Distance(myActor->GetActorLocation(), target->GetActorLocation());
 		//UE_LOG(LogTemp, Warning, TEXT("%f"), dist);
 
-		if (IsWaitComplete(1.5) || dist < 250) {
+		if (IsWaitComplete(1.5) || dist < 150) {
 			ChangeState(EEnemyState::ATTACK_DELAY);
 		}
 
