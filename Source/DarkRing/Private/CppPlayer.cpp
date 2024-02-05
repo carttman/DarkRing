@@ -333,8 +333,6 @@ void ACppPlayer::EnhancedAttck(const struct FInputActionValue& value)
 {
 	// 만약 현재Stemina가 최소 Stemina이거나 현재Stemina가 20보다 작으면 못쓰도록
 	if (currStemina == minStemina || currStemina < 10) return;
-	//Stemina 20 사용
-	currStemina -= 10;
 
 	// 만약 공중에 있는 상태라면 공격 못하도록 바로 리턴
 	if (GetCharacterMovement()->IsFalling()) return;
@@ -356,6 +354,9 @@ void ACppPlayer::EnhancedAttck(const struct FInputActionValue& value)
 		comboCnt++;
 		comboCurrTime = 0;
 		UE_LOG(LogTemp, Warning, TEXT("%d타"), comboCnt);
+
+		//Stemina 10 사용
+		currStemina -= 10;
 
 		//공격 몽타주 섹션 실행
 		playAnimation = true;
@@ -395,6 +396,9 @@ void ACppPlayer::EnhancedAttck(const struct FInputActionValue& value)
 			comboCurrTime = 0;
 			UE_LOG(LogTemp, Warning, TEXT("%d타"), comboCnt);
 
+			//Stemina 10 사용
+			currStemina -= 10;
+
 			playAnimation = true;
 			sectionName = TEXT("Attack2");
 
@@ -431,6 +435,9 @@ void ACppPlayer::EnhancedAttck(const struct FInputActionValue& value)
 			comboCnt++;
 			comboCurrTime = 0;
 			UE_LOG(LogTemp, Warning, TEXT("%d타"), comboCnt);
+
+			//Stemina 10 사용
+			currStemina -= 10;
 
 			playAnimation = true;
 			sectionName = TEXT("Attack3");

@@ -101,9 +101,12 @@ public: // 스킬들 생성 관련 액터와 애니메이션 클래스
 
 	//콤보 카운트와 콤보 타이밍 시간 변수
 	int32 comboCnt = 0;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	float comboMinTime = 0.5f;
 	float comboMaxTime = 0.8f;
 	float comboCurrTime = 0;
+	// 공격중인가?
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	bool isAttacking = false;
 
 	//현재 구르기 시간을 계산하는 변수와 구르기 거리 변수
