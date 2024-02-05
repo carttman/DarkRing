@@ -124,7 +124,6 @@ void UBossFSM::ChangeState(EEnemyState s)
 	}
 		break;
 	case EEnemyState::ATTACK_DELAY:
-		target->GetCharacterMovement()->MaxWalkSpeed = 100;
 
 		break;
 	case EEnemyState::BOMB:
@@ -138,6 +137,8 @@ void UBossFSM::ChangeState(EEnemyState s)
 	{
 		dashCurrTime = 0;
 		dashDir = target->GetActorLocation() - myActor->GetActorLocation();
+		targetDash = UKismetMathLibrary::RandomBool();
+
 	}
 	default:
 		break;
@@ -286,18 +287,35 @@ void UBossFSM::UpdateBomb()
 
 void UBossFSM::UpdateDash()
 {
+
 	//바로 Dash		
 		myActor->GetCharacterMovement()->MaxWalkSpeed = 3500;
-		target->GetCharacterMovement()->MaxWalkSpeed = 100;
-
-		myActor->AddMovementInput(dashDir);
-
+		
 		float dist = FVector::Distance(myActor->GetActorLocation(), target->GetActorLocation());
+
+		if (targetDash) {
+			UE_LOG(LogTemp, Warning, TEXT("dash optional"));
+
+			myActor->AddMovementInput(dashDir);
+			
+			if (IsWaitComplete(1.5) || dist < 150) {
+				ChangeState(EEnemyState::ATTACK_DELAY);
+			}
+
+		}
+		//무조건 dash 타격
+		else {
+			UE_LOG(LogTemp,Warning,TEXT("dash must attack"));
+			myActor->AddMovementInput(target->GetActorLocation()- myActor->GetActorLocation());
+			if (dist < 150) {
+				ChangeState(EEnemyState::ATTACK_DELAY);
+			}
+
+		}
+
+
 		//UE_LOG(LogTemp, Warning, TEXT("%f"), dist);
 
-		if (IsWaitComplete(1.5) || dist < 150) {
-			ChangeState(EEnemyState::ATTACK_DELAY);
-		}
 
 
 }

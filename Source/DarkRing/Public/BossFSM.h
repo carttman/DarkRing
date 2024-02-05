@@ -55,7 +55,7 @@ public:
 	class UAnimMontage* montage;
 
 	UPROPERTY(EditAnywhere)
-	float traceRange = 700;
+	float traceRange = 1500;
 	UPROPERTY(EditAnywhere)
 	float attackRange = 150;
 
@@ -92,11 +92,14 @@ public:
 	int makeSphere = 0;
 
 	UPROPERTY(EditAnywhere)
-	int32 sphereCnt = 100;
+	int32 sphereCnt = 200;
 
 	UPROPERTY(EditAnywhere)
 	float veryFar = 800;
 
+
+	UPROPERTY(EditAnywhere)
+	int32 targetDash = true;
 
 // 	UPROPERTY(EditAnywhere)
 // 	AActor* SpawnedActorRef;
