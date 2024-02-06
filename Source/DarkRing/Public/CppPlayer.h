@@ -32,7 +32,7 @@ public:
 	UPROPERTY(EditAnywhere)
 	class USpringArmComponent* springArm;
 
-	UPROPERTY(EditAnywhere)
+	UPROPERTY(EditAnywhere, BlueprintReadOnly)
 	class UCameraComponent* camera;
 
 	// float h; , float v;
