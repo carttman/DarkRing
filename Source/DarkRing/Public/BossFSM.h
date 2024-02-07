@@ -55,14 +55,14 @@ public:
 	class UAnimMontage* montage;
 
 	UPROPERTY(EditAnywhere)
-	float traceRange = 1500;
+	float traceRange = 700;
 	UPROPERTY(EditAnywhere)
 	float attackRange = 150;
 
 	UPROPERTY(EditAnywhere)
 	float currTime = 0;
 	UPROPERTY(EditAnywhere)
-	float currTime2 = 1;
+	float currTime2 = 2;
 	UPROPERTY(EditAnywhere)
 	float attackDelayTime = 1;
 	float damageDelayTime = 2;
@@ -72,7 +72,7 @@ public:
 
 	UPROPERTY(EditAnywhere)
 	float dashCurrTime = 0;
-	float dashDelayTime = 3;   //이거 7로 바꾸기
+	float dashDelayTime = 3;   
 
 	//플레이어 도망갈 시간
 	UPROPERTY(EditAnywhere)
@@ -83,6 +83,11 @@ public:
 
 	UPROPERTY(EditAnywhere)
 	FVector originPos;
+	UPROPERTY(EditAnywhere)
+	FVector targetPos;
+
+	UPROPERTY(EditAnywhere)
+	bool start = true;
 
 
 	UPROPERTY(EditAnywhere)

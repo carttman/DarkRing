@@ -48,7 +48,6 @@ void UBossFSM::BeginPlay()
 	originPos = myActor->GetActorLocation();
 
 
-
 }
 
 
@@ -59,6 +58,9 @@ void UBossFSM::TickComponent(float DeltaTime, ELevelTick TickType, FActorCompone
 
 	//UE_LOG(LogTemp, Warning, TEXT("currTime2 : %f, 2 : %f"), currTime, currTime2);
 
+	if(start && IsWaitComplete(3)) ChangeState(EEnemyState::RETURN);
+
+	if(IsWaitComplete2(10) && makeSphere == 0) SphereFactory();
 
 	if (target == nullptr) return;
 
@@ -127,7 +129,7 @@ void UBossFSM::ChangeState(EEnemyState s)
 
 		break;
 	case EEnemyState::BOMB:
-
+		currTime2 =0;
 		makeSphere = 0;
 		dashCurrTime = 0;
 		UE_LOG(LogTemp, Warning, TEXT("bomb"));
@@ -141,6 +143,11 @@ void UBossFSM::ChangeState(EEnemyState s)
 
 	}
 	default:
+	case EEnemyState::RETURN:
+	{
+		targetPos = target->GetActorLocation();
+	}
+
 		break;
 	}
 }
@@ -185,6 +192,7 @@ void UBossFSM::UpdateAttack()
 
 	dashCurrTime += GetWorld()->DeltaTimeSeconds;
 
+	makeSphere = 0;
 
 	float dist = FVector::Distance(target->GetActorLocation(), myActor->GetActorLocation());
 
@@ -247,6 +255,7 @@ void UBossFSM::UpdateDamaged()
 void UBossFSM::UpdateBomb()
 {
 
+
 	if (IsWaitComplete(bombReadyTime)) {
 		//주위에 강한데미지
 
@@ -273,7 +282,7 @@ void UBossFSM::UpdateBomb()
 
 				SphereFactory();
 				
-				UE_LOG(LogTemp, Warning, TEXT("i is"));
+				//UE_LOG(LogTemp, Warning, TEXT("i is"));
 		
 			}
 			else if(makeSphere == 1 && currTime > 2) SphereFactory();
@@ -339,14 +348,20 @@ bool UBossFSM::IsWaitComplete2(float delay)
 
 }
 
+//순간이동으로 바꿈
 void UBossFSM::UpdateReturn()
 {
+	start = false;
 
-	FVector dir = originPos - myActor->GetActorLocation();
+	myActor->SetActorLocation(targetPos + (target->GetActorForwardVector() + FVector(70)));
 
-	FVector distacnePtoB = myActor->GetActorLocation() - target->GetActorLocation();
+	if(IsWaitComplete(1)) ChangeState(EEnemyState::MOVE);
 
-	myActor->AddMovementInput(dir);
+	//FVector dir = originPos - myActor->GetActorLocation();
+
+	//FVector distacnePtoB = myActor->GetActorLocation() - target->GetActorLocation();
+
+	/*myActor->AddMovementInput(dir);
 
 	if (distacnePtoB.Length() < attackRange) ChangeState(EEnemyState::ATTACK);
 	else if(distacnePtoB.Length() < traceRange) ChangeState(EEnemyState::MOVE);
@@ -360,6 +375,7 @@ void UBossFSM::UpdateReturn()
 		}
 
 	}
+	*/
 }
 
 void UBossFSM::Looking()
@@ -375,6 +391,7 @@ void UBossFSM::SphereFactory()
 {
 	float sphereAttackTime = FMath::RandRange(0.5f, 2.0f);
 
+	currTime2 = 0;
 
 	FVector pos;
 	float halfValue = ((sphereCnt - 1) * 100) / 2.0f;
