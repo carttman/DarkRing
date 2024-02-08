@@ -39,7 +39,7 @@ public:
 	FVector moveInput = FVector(0);
 
 	// 이동속도
-	float moveSpeed = 500;
+	float moveSpeed = 600;
 
 public: // Enhanced input 변수들
 	
