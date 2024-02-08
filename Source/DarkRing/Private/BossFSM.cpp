@@ -58,7 +58,7 @@ void UBossFSM::TickComponent(float DeltaTime, ELevelTick TickType, FActorCompone
 
 	//UE_LOG(LogTemp, Warning, TEXT("currTime2 : %f, 2 : %f"), currTime, currTime2);
 
-	if(start && IsWaitComplete(3)) ChangeState(EEnemyState::RETURN);
+	if(start && IsWaitComplete(4)) ChangeState(EEnemyState::RETURN);
 
 	if(IsWaitComplete2(10) && makeSphere == 0) SphereFactory();
 
