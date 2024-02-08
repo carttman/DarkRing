@@ -161,6 +161,10 @@ ACppPlayer::ACppPlayer()
 	GetMesh()->SetAnimInstanceClass(abpClass);
 
 	isRolling = true;
+
+	//캐릭터 회전속도 조정
+	GetCharacterMovement()->RotationRate = FRotator(0, 540, 0);
+
 }
 
 
@@ -200,6 +204,7 @@ void ACppPlayer::BeginPlay()
 	// imc_Default를 추가하자
 	subSystem->AddMappingContext(imcDefault, 0);
 
+	//궁극기 오라 비활성화
 	ultAura->Deactivate();
 
 	//게임시작 시 현재 마나는 최대 마나와 같게
@@ -266,7 +271,7 @@ void ACppPlayer::MoveAction(FVector2d keyboardInput)
 	FVector right = UKismetMathLibrary::GetRightVector(rot);
 
 	FVector dir = right * keyboardInput.X + forward * keyboardInput.Y;
-
+	
 	// dir 의 크기를 1로 만든다
 	dir.Normalize();
 
